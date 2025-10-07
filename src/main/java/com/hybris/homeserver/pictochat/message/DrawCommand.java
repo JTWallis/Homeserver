@@ -27,27 +27,21 @@ public class DrawCommand {
 	public int getId() {
 		return id;
 	}
-	
 	public int getType() {
 		return type;
 	}
-	
 	public Vector2 getStartPos() {
 		return startPos;
 	}
-	
 	public Vector2 getEndPos() {
 		return endPos;
 	}
-	
 	public String getValue() {
 		return value;
 	}
-	
 	public int getPenSize() {
 		return penSize;
 	}
-	
 	public String getPenColor() {
 		return penColor;
 	}
