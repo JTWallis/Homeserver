@@ -7,14 +7,14 @@ public class DrawCommand {
 	private Vector2 startPos;
 	private Vector2 endPos;
 	private String value;
-	private int penSize;
+	private double penSize;
 	private String penColor;
 	
 	public DrawCommand() {
 		
 	}
 	
-	public DrawCommand(int id, int type, Vector2 startPos, Vector2 endPos, String value, int penSize, String penColor) {
+	public DrawCommand(int id, int type, Vector2 startPos, Vector2 endPos, String value, double penSize, String penColor) {
 		this.id = id;
 		this.type = type;
 		this.startPos = startPos;
@@ -39,7 +39,8 @@ public class DrawCommand {
 	public String getValue() {
 		return value;
 	}
-	public int getPenSize() {
+	
+	public double getPenSize() {
 		return penSize;
 	}
 	public String getPenColor() {
