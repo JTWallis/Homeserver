@@ -23,6 +23,6 @@ public class Vector2 {
 	
 	@Override
 	public String toString() {
-		return this.x + "|" + this.y;
+		return String.format("%5f|%5f", x, y);
 	}
 }
