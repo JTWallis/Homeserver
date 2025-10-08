@@ -19,7 +19,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		registry.addEndpoint("/pictochat")
-				.setAllowedOrigins("http://localhost:8001/");
+				.setAllowedOrigins("http://localhost:8001/")
+				.setHandshakeHandler(new StompHandshakeHandler());
 	}
 	
 }
