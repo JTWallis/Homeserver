@@ -12,8 +12,8 @@ public class MessageController {
 	 */
 	@MessageMapping("/messages")
 	@SendTo("/topic/room/a/messages")
-	public Message sendMessage(Message message) throws Exception {
-		System.out.println("Received and echoing back Message" + message.toString());
+	public Message sendMessage(Message message, Principal principal) throws Exception {
+		System.out.println("Received and echoing back Message from " + principal.getName() + "\n" + message.toString());
 		return message;
 	}
 }
