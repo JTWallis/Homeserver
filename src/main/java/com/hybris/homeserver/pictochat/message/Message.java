@@ -24,7 +24,7 @@ public class Message {
 	
 	@Override
 	public String toString() {
-		String result = "Message: creator[" + creatorName + "] + DrawCommands:";
+		String result = "Message:\n  Creator[" + creatorName + "]";
 		for(DrawCommand command : commands) {
 			result += "\n  " + command.toString();
 		}
