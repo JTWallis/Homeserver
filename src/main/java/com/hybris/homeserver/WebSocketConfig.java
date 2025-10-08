@@ -12,14 +12,15 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
-		config.enableSimpleBroker("/room");
+		config.enableSimpleBroker("/topic", "/queue");
 		config.setApplicationDestinationPrefixes("/app");
 	}
 	
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		registry.addEndpoint("/pictochat")
-				.setAllowedOrigins("http://localhost:8001/");
+				.setAllowedOrigins("http://localhost:8001/")
+				.setHandshakeHandler(new StompHandshakeHandler());
 	}
 	
 }
