@@ -103,6 +103,14 @@ public class RoomConnectedEventListener {
 		}
 	}
 	
+	private void handleUserConnect(String user, char roomNumber) {
+		broadcastConnect(user, roomNumber, ConnectionTypes.CONNECT);
+	}
+	
+	private void handleUserDisconnect(String user, char roomNumber) {
+		broadcastConnect(user, roomNumber, ConnectionTypes.DISCONNECT);
+	}
+	
 	private void broadcastRoomsConnectionCount() {
 		template.convertAndSend(ENDPOINT_CONNECTIONS, roomTracker.createRoomsDto());
 	}
