@@ -106,5 +106,20 @@ public class RoomConnectedEventListener {
 	private void broadcastRoomsConnectionCount() {
 		template.convertAndSend(ENDPOINT_CONNECTIONS, roomTracker.createRoomsDto());
 	}
-
+	
+	private void broadcastConnect(String user, char roomNumber, ConnectionTypes connectionType) {
+		String endpointConnections = ENDPOINT_ROOM + roomNumber + ENDPOINT_SUFFIX_CONNECTIONS;
+		String nickname = usernameTracker.getNickname(user);
+		System.out.println("  Broadcasting nickname " + nickname);
+		UserConnection userConnection = new UserConnection(nickname, connectionType);
+		
+		for(SimpUser simpUser : userRegistry.getUsers()) {
+			if(simpUser.getName().equals(user)) continue;
+			
+			if(roomTracker.isSubscribedTo(simpUser.getName(), roomNumber)) {
+				template.convertAndSend(endpointConnections, userConnection);
+			}
+		}
+	}
+	
 }
