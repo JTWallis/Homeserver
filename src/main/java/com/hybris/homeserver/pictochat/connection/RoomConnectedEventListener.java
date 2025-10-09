@@ -68,6 +68,7 @@ public class RoomConnectedEventListener {
 			return;
 		}
 		
+		handleUserConnect(user, roomNumber);
 		roomTracker.subscribe(user, roomNumber);
 		broadcastRoomsConnectionCount();
 	}
@@ -83,6 +84,7 @@ public class RoomConnectedEventListener {
 		String user = principal.getName();
 		
 		if(destination.startsWith(ENDPOINT_ROOM) && roomTracker.isSubscribed(user)) {
+			handleUserDisconnect(user, roomTracker.getSubscribedRoom(user));
 			roomTracker.unsubscribe(user);
 			broadcastRoomsConnectionCount();
 		}
@@ -98,6 +100,7 @@ public class RoomConnectedEventListener {
 		String user = principal.getName();
 		
 		if(roomTracker.isSubscribed(user)) {
+			handleUserDisconnect(user, roomTracker.getSubscribedRoom(user));
 			roomTracker.unsubscribe(user);
 			broadcastRoomsConnectionCount();
 		}
