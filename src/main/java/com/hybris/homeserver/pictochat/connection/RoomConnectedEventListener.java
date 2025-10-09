@@ -47,6 +47,26 @@ public class RoomConnectedEventListener {
 		if(destination.length() == ENDPOINT_ROOM.length()) return;
 		
 		String user = principal.getName();
+		
+		char roomNumber = destination.charAt(ENDPOINT_ROOM.length());
+		String endpointMessages = roomNumber + ENDPOINT_SUFFIX_MESSAGES;
+		if(!destination.endsWith(endpointMessages)) return;
+		
+		// Subscribed to endpoint /topic/room/{number}/messages
+		
+		if(!roomTracker.isRoomValid(roomNumber)) {
+			String errorMessage = "Tried to subscribe to invalid room number " + roomNumber + "!";
+			System.out.println("ERROR: " + errorMessage);
+			template.convertAndSendToUser(user, ENDPOINT_ERROR, errorMessage);
+			return;
+		}
+		
+		if(roomTracker.isSubscribed(user)) {
+			System.out.println("ERROR: User " + principal.getName() + " already subscribed to a room!");
+			String errorMessage = "Can only subscribe to one room at a time!";
+			template.convertAndSendToUser(user, ENDPOINT_ERROR, errorMessage);
+			return;
+		}
 
 	}
 	
