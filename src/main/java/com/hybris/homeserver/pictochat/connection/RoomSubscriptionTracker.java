@@ -9,12 +9,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class RoomSubscriptionTracker {
 
-	private final String[] ROOM_PREFIXES = {"a", "b", "c", "d"};
-	private Map<String, String> userToRoom = new ConcurrentHashMap<>();
+	private final Character[] ROOM_PREFIXES = {'a', 'b', 'c', 'd'};
+	private Map<String, Character> userToRoom = new ConcurrentHashMap<>();
 	
-	public boolean isRoomValid(String room) {
-		for(String prefix : ROOM_PREFIXES) {
-			if(prefix.equals(room)) return true;
+	public boolean isRoomValid(char room) {
+		for(char prefix : ROOM_PREFIXES) {
+			if(prefix == room) return true;
 		}
 		
 		return false;
@@ -24,14 +24,14 @@ public class RoomSubscriptionTracker {
 		return userToRoom.get(user) != null;
 	}
 	
-	public boolean isSubscribedTo(String user, String roomNumber) {
-		String room = userToRoom.get(user);
+	public boolean isSubscribedTo(String user, char roomNumber) {
+		Character room = userToRoom.get(user);
 		if(room == null) return false;
 		
 		return room.equals(roomNumber);
 	}
 	
-	public String getSubscribedRoom(String user) {
+	public Character getSubscribedRoom(String user) {
 		return userToRoom.get(user);
 	}
 	
@@ -48,7 +48,7 @@ public class RoomSubscriptionTracker {
 	public Rooms createRoomsDto() {
 		Room[] rooms = new Room[ROOM_PREFIXES.length];
 		for(int i = 0; i < ROOM_PREFIXES.length; i++) {
-			String roomPrefix = ROOM_PREFIXES[i];
+			Character roomPrefix = ROOM_PREFIXES[i];
 			int roomCount = Collections.frequency(userToRoom.values(), roomPrefix);
 			rooms[i] = new Room(roomPrefix, roomCount);
 		}

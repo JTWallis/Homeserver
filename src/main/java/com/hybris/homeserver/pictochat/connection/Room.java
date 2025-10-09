@@ -2,17 +2,17 @@ package com.hybris.homeserver.pictochat.connection;
 
 public class Room {
 
-	private String roomNumber;
+	private char roomNumber;
 	private int connectionCount;
 	
 	public Room() {}
 	
-	public Room(String roomNumber, int connectionCount) {
+	public Room(char roomNumber, int connectionCount) {
 		this.roomNumber = roomNumber;
 		this.connectionCount = connectionCount;
 	}
 	
-	public String getRoomNumber() {
+	public char getRoomNumber() {
 		return roomNumber;
 	}
 	
