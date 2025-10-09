@@ -67,7 +67,9 @@ public class RoomConnectedEventListener {
 			template.convertAndSendToUser(user, ENDPOINT_ERROR, errorMessage);
 			return;
 		}
-
+		
+		roomTracker.subscribe(user, roomNumber);
+		broadcastRoomsConnectionCount();
 	}
 	
 	@EventListener
