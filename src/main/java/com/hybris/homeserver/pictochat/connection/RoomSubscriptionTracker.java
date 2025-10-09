@@ -31,6 +31,10 @@ public class RoomSubscriptionTracker {
 		return room.equals(roomNumber);
 	}
 	
+	public String getSubscribedRoom(String user) {
+		return userToRoom.get(user);
+	}
+	
 	public void subscribe(String user, String room) {
 		System.out.println("User " + user + " connected to room " + room);
 		userToRoom.put(user, room);
