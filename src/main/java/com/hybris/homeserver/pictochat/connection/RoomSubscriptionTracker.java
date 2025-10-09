@@ -44,5 +44,15 @@ public class RoomSubscriptionTracker {
 		System.out.println("User " + user + " disconnected from a room.");
 		userToRoom.remove(user);
 	}
-
+	
+	public Rooms createRoomsDto() {
+		Room[] rooms = new Room[ROOM_PREFIXES.length];
+		for(int i = 0; i < ROOM_PREFIXES.length; i++) {
+			String roomPrefix = ROOM_PREFIXES[i];
+			int roomCount = Collections.frequency(userToRoom.values(), roomPrefix);
+			rooms[i] = new Room(roomPrefix, roomCount);
+		}
+		
+		return new Rooms(rooms);
+	}
 }
