@@ -12,6 +12,14 @@ public class RoomSubscriptionTracker {
 	private final String[] ROOM_PREFIXES = {"a", "b", "c", "d"};
 	private Map<String, String> userToRoom = new ConcurrentHashMap<>();
 	
+	public boolean isRoomValid(String room) {
+		for(String prefix : ROOM_PREFIXES) {
+			if(prefix.equals(room)) return true;
+		}
+		
+		return false;
+	}
+	
 	public boolean isSubscribed(String user) {
 		return userToRoom.get(user) != null;
 	}
