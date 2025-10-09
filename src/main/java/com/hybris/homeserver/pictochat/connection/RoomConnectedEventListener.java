@@ -33,5 +33,20 @@ public class RoomConnectedEventListener {
 	
 	@Autowired
 	private SimpUserRegistry userRegistry;
+	
+	@EventListener
+	public void handleSubscribeEvent(SessionSubscribeEvent event) {
+
+	}
+	
+	@EventListener
+	public void handleUnsubscribeEvent(SessionUnsubscribeEvent event) {
+
+	}
+	
+	@EventListener
+	public void handleDisconnectEvent(SessionDisconnectEvent event) {
+
+	}
 
 }
