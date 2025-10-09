@@ -36,6 +36,17 @@ public class RoomConnectedEventListener {
 	
 	@EventListener
 	public void handleSubscribeEvent(SessionSubscribeEvent event) {
+		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
+		Principal principal = accessor.getUser();
+		String destination = accessor.getDestination();
+		
+		System.out.println("  Subscribed to destination" + destination);
+	
+		if(principal == null || destination == null) return;
+		if(!destination.startsWith(ENDPOINT_ROOM)) return;
+		if(destination.length() == ENDPOINT_ROOM.length()) return;
+		
+		String user = principal.getName();
 
 	}
 	
