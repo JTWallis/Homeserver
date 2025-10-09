@@ -74,7 +74,18 @@ public class RoomConnectedEventListener {
 	
 	@EventListener
 	public void handleUnsubscribeEvent(SessionUnsubscribeEvent event) {
-
+		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
+		Principal principal = accessor.getUser();
+		String destination = accessor.getDestination();
+		
+		if(principal == null || destination == null) return;
+		
+		String user = principal.getName();
+		
+		if(destination.startsWith(ENDPOINT_ROOM) && roomTracker.isSubscribed(user)) {
+			roomTracker.unsubscribe(user);
+			broadcastRoomsConnectionCount();
+		}
 	}
 	
 	@EventListener
