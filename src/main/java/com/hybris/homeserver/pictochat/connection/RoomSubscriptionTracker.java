@@ -12,6 +12,17 @@ public class RoomSubscriptionTracker {
 	private final String[] ROOM_PREFIXES = {"a", "b", "c", "d"};
 	private Map<String, String> userToRoom = new ConcurrentHashMap<>();
 	
+	public boolean isSubscribed(String user) {
+		return userToRoom.get(user) != null;
+	}
+	
+	public boolean isSubscribedTo(String user, String roomNumber) {
+		String room = userToRoom.get(user);
+		if(room == null) return false;
+		
+		return room.equals(roomNumber);
+	}
+	
 	public void subscribe(String user, String room) {
 		System.out.println("User " + user + " connected to room " + room);
 		userToRoom.put(user, room);
