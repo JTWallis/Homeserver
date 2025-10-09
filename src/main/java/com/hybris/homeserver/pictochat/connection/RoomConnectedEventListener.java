@@ -78,6 +78,8 @@ public class RoomConnectedEventListener {
 	@EventListener
 	public void handleDisconnectEvent(SessionDisconnectEvent event) {
 
+	private void broadcastRoomsConnectionCount() {
+		template.convertAndSend(ENDPOINT_CONNECTIONS, roomTracker.createRoomsDto());
 	}
 
 }
