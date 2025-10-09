@@ -90,7 +90,19 @@ public class RoomConnectedEventListener {
 	
 	@EventListener
 	public void handleDisconnectEvent(SessionDisconnectEvent event) {
-
+		StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
+		Principal principal = accessor.getUser();
+		
+		if(principal == null) return;
+		
+		String user = principal.getName();
+		
+		if(roomTracker.isSubscribed(user)) {
+			roomTracker.unsubscribe(user);
+			broadcastRoomsConnectionCount();
+		}
+	}
+	
 	private void broadcastRoomsConnectionCount() {
 		template.convertAndSend(ENDPOINT_CONNECTIONS, roomTracker.createRoomsDto());
 	}
