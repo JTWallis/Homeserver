@@ -181,7 +181,7 @@ public class RoomConnectedEventListener {
 		String endpointConnections = ENDPOINT_ROOM + roomNumber + ENDPOINT_SUFFIX_CONNECTIONS;
 		String nickname = usernameTracker.getNickname(user);
 		System.out.println("  Broadcasting nickname " + nickname);
-		UserConnection userConnection = new UserConnection(nickname, connectionType);
+		UserConnection userConnection = new UserConnection(user, nickname, connectionType);
 		
 		for(SimpUser simpUser : userRegistry.getUsers()) {
 			if(simpUser.getName().equals(user)) continue;
