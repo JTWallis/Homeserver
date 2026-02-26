@@ -39,6 +39,8 @@ public class MessageController {
 
 		}
 		
-		return message;
+		MessageBroadcast messageBroadcast = new MessageBroadcast(message, principal.getName());
+		
+		return messageBroadcast;
 	}
 }
