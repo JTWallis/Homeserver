@@ -32,7 +32,9 @@ public class UserConnectionController {
 		System.out.println("Registering User " + nickname + " to UUID " + principal.getName());
 		userTracker.link(principal.getName(), nickname);
 		
-		template.convertAndSendToUser(principal.getName(), "/queue/receipts", "ok");
+		UserRegister userRegister = new UserRegister(principal.getName(), "ok");
+		
+		template.convertAndSendToUser(principal.getName(), "/queue/receipts", userRegister);
 	}
 	
 }
