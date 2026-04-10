@@ -43,4 +43,15 @@ public class CloudLoginService {
 		
 		return entity;
 	}
+	
+
+	public boolean isLoginValid(String username, String password) throws EmptyResultDataAccessException {
+		String storedPassword = loginRepository.getPasswordByUsername(username);
+		
+		if(storedPassword == null || storedPassword.isEmpty()) {
+			throw new EmptyResultDataAccessException(1);
+		}
+		
+		return BCrypt.checkpw(password, storedPassword);
+	}
 }
