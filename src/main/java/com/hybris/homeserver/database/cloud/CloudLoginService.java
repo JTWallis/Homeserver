@@ -17,4 +17,30 @@ public class CloudLoginService {
 		this.loginRepository = loginRepository;
 	}
 	
+	public CloudLoginEntity addUser(CloudLoginDto login) throws DataIntegrityViolationException {
+		login = new CloudLoginDto(
+				login.getUsername(),
+				BCrypt.hashpw(login.getPassword(), BCrypt.gensalt())
+		);
+		
+		CloudLoginEntity entity = new CloudLoginEntity();
+		BeanUtils.copyProperties(login, entity);
+		
+		try {
+			loginRepository.save(entity);
+		} catch(Exception e) {
+			// Unique constraint violation.
+			// Sadly no cleaner approach to catch this exception.
+			//   StackTrace is:
+			//   -> org.hibernate.exception.GenericJDBCException
+			//   -> org.sqlite.SQLiteException
+			for(Throwable t = e; t != null; t = t.getCause()) {
+				if(t.getMessage().toUpperCase().contains("SQLITE_CONSTRAINT_UNIQUE")) {
+					throw new DataIntegrityViolationException(t.getMessage());
+				}
+			}
+		}
+		
+		return entity;
+	}
 }
