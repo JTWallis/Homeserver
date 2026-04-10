@@ -29,6 +29,9 @@ buildNumber.properties
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 
+### Other ###
+*.db
+
 ### IntelliJ IDEA ###
 .idea
 *.iws
