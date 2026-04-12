@@ -8,6 +8,10 @@ import org.springframework.stereotype.Repository;
 public interface CloudLoginRepository extends JpaRepository<CloudLoginEntity, Long> {
 
 	
+	@Query("SELECT c from CloudLoginEntity c "
+			+ "WHERE c.username = :username")
+	CloudLoginEntity getByUsername(String username);
+	
 	@Query("SELECT c.password FROM CloudLoginEntity c "
 			+ "WHERE c.username = :username")
 	String getPasswordByUsername(String username);
