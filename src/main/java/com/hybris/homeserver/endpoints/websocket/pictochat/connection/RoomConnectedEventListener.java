@@ -1,4 +1,4 @@
-package com.hybris.homeserver.pictochat.connection;
+package com.hybris.homeserver.endpoints.websocket.pictochat.connection;
 
 import java.security.Principal;
 

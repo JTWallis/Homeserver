@@ -1,4 +1,4 @@
-package com.hybris.homeserver.pictochat.connection;
+package com.hybris.homeserver.endpoints.websocket.pictochat.connection;
 
 public class UserRegister {
 	private String uuid;

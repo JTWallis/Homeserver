@@ -1,4 +1,4 @@
-package com.hybris.homeserver.pictochat.message;
+package com.hybris.homeserver.endpoints.websocket.pictochat.message;
 
 public class Message {
 
