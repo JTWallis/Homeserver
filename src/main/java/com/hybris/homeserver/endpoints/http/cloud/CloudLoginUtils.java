@@ -3,7 +3,7 @@ package com.hybris.homeserver.endpoints.http.cloud;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import com.hybris.homeserver.ErrorResponseDto;
+import com.hybris.homeserver.endpoints.http.api.ErrorResponseDto;
 
 public class CloudLoginUtils {
 

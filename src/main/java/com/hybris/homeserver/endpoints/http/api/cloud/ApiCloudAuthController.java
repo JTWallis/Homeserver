@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.hybris.homeserver.ErrorResponseDto;
 import com.hybris.homeserver.database.cloud.CloudLoginService;
+import com.hybris.homeserver.endpoints.http.api.ErrorResponseDto;
 import com.hybris.homeserver.endpoints.http.cloud.CloudLoginDto;
 import com.hybris.homeserver.endpoints.http.cloud.CloudLoginUtils;
 

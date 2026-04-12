@@ -1,4 +1,4 @@
-package com.hybris.homeserver;
+package com.hybris.homeserver.endpoints.http.api;
 
 import java.time.Instant;
 
