@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hybris.homeserver.cloud.CloudLoginController;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -26,7 +25,7 @@ import jakarta.servlet.http.HttpServletResponse;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	
-	private static final Logger logger = LoggerFactory.getLogger(CloudLoginController.class);
+	private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
 	private final JwtService jwtService;
 	private final UserDetailsService userDetailsService;
 	
