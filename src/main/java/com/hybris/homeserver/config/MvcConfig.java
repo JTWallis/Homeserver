@@ -1,4 +1,4 @@
-package com.hybris.homeserver;
+package com.hybris.homeserver.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;

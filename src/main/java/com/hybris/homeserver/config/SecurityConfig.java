@@ -1,4 +1,4 @@
-package com.hybris.homeserver;
+package com.hybris.homeserver.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.hybris.homeserver.JwtAuthenticationFilter;
 import com.hybris.homeserver.endpoints.http.cloud.CloudUserDetailsService;
 
 @Configuration
