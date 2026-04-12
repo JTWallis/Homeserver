@@ -9,12 +9,14 @@ public class ErrorResponseDto {
 	private Instant timestamp;
 	private int status;
 	private String error;
+	private String path;
 	private String message;
 	
-	public ErrorResponseDto(HttpStatus httpStatus, String customMessage) {
+	public ErrorResponseDto(HttpStatus httpStatus,  String path, String customMessage) {
 		this.timestamp = Instant.now();
 		this.status = httpStatus.value();
 		this.error = httpStatus.getReasonPhrase();
+		this.path = path;
 		this.message = customMessage;
 	}
 	
@@ -30,9 +32,12 @@ public class ErrorResponseDto {
 		return error;
 	}
 	
+	public String getPath() {
+		return path;
+	}
+	
 	public String getMessage() {
 		return message;
 	}
-	
 
 }
