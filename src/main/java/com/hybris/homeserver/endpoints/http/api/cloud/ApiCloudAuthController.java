@@ -1,4 +1,4 @@
-package com.hybris.homeserver.api.cloud;
+package com.hybris.homeserver.endpoints.http.api.cloud;
 
 
 import org.slf4j.Logger;
@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.hybris.homeserver.ErrorResponseDto;
-import com.hybris.homeserver.cloud.CloudLoginDto;
-import com.hybris.homeserver.cloud.CloudLoginUtils;
 import com.hybris.homeserver.database.cloud.CloudLoginService;
+import com.hybris.homeserver.endpoints.http.cloud.CloudLoginDto;
+import com.hybris.homeserver.endpoints.http.cloud.CloudLoginUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
 

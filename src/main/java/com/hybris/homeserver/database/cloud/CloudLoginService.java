@@ -12,9 +12,9 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import com.hybris.homeserver.JwtService;
-import com.hybris.homeserver.api.cloud.ApiCloudAuthResponseDto;
-import com.hybris.homeserver.cloud.CloudLoginDto;
-import com.hybris.homeserver.cloud.CloudUserDetailsService;
+import com.hybris.homeserver.endpoints.http.api.cloud.ApiCloudAuthResponseDto;
+import com.hybris.homeserver.endpoints.http.cloud.CloudLoginDto;
+import com.hybris.homeserver.endpoints.http.cloud.CloudUserDetailsService;
 
 @Service
 public class CloudLoginService {

@@ -14,7 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.hybris.homeserver.cloud.CloudUserDetailsService;
+import com.hybris.homeserver.endpoints.http.cloud.CloudUserDetailsService;
 
 @Configuration
 public class SecurityConfig {

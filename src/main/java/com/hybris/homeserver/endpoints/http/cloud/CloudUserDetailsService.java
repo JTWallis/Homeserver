@@ -1,4 +1,4 @@
-package com.hybris.homeserver.cloud;
+package com.hybris.homeserver.endpoints.http.cloud;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.core.userdetails.User;

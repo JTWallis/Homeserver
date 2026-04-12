@@ -1,4 +1,4 @@
-package com.hybris.homeserver.api.cloud;
+package com.hybris.homeserver.endpoints.http.api.cloud;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

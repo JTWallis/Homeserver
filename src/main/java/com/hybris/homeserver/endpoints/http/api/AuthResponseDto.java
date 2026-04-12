@@ -1,4 +1,4 @@
-package com.hybris.homeserver.api;
+package com.hybris.homeserver.endpoints.http.api;
 
 public class AuthResponseDto {
 	private String token;
