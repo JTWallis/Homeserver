@@ -1,4 +1,4 @@
-package com.hybris.homeserver.database.cloud;
+package com.hybris.homeserver.endpoints.http.cloud;
 
 public class CloudFile {
 
