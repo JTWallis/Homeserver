@@ -6,9 +6,102 @@
 	<body>
 		<h1>Filesystem</h1>
 		
-		<form th:action="@{/cloud/logout}" method="post">
-			<input type="submit" value="Sign out" />
+		<div class="header">
+		    <button>
+		        <img th:src="@{/images/icon_upload.png}" height=24 width=24>
+		        <span>Upload file</span>
+		    </button>
+		    <form th:action="@{/cloud/logout}" method="post">
+			    <input type="submit" value="Sign out" />
+		    </form>
+		</div>
+		
+		<hr>
+		
+		<form th:action="@{/cloud}" method="post">
+			<ul>
+				<li th:each="file : ${files}">
+					<div class="fileRow">
+						
+						<button
+							type="submit"
+							name="path"
+							th:value="${dir} + '/' + ${file.filename}"
+							class="btnFile"
+						>
+							<img
+								th:src="@{'/images/' + ${file.iconname}}"
+								width=24
+								height=24
+								class="imgFile"
+							>
+							<span 
+								th:text="${file.filename}"
+								class="spanFile">
+							</span>
+						</button>
+						
+						<button th:unless="${file.filename == '..'}" class="btnDownload">
+						    <img
+								th:src="@{/images/iconDownload.png}"
+								width=24
+								height=24
+							>
+						</button>
+						
+					</div>
+				</li>
+			</ul>
 		</form>
+		
 	</body>
+	
+	<style>
+		ul {
+	        list-style-type: none;
+	        margin: 0;
+	        padding: 0;
+	    }
 
+	    button {
+	        display: flex;
+	        align-items: center;
+	    }
+
+	    button:hover {
+	        cursor: pointer;
+	    }
+
+	    .header {
+	        display: flex;
+	        width: 100%;
+	        align-items: center;
+	        justify-content: space-between;
+	    }
+		
+		.fileRow {
+		    display: flex;
+		    width: 100%;
+		    margin-top: 4px;
+		    margin-bottom: 4px;
+		}
+
+	    .imgFile {
+	        margin-right: 8px;        
+	    }
+		
+		.spanFile {
+		    color: blue;
+		    text-decoration: underline;
+		}
+
+	    .btnFile {
+	        border: none;
+	        background-color: inherit;
+	    }
+
+	    .btnDownload {
+	        margin-left: auto;
+	    }
+	</style>
 </html>
