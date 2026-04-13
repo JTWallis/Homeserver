@@ -1,4 +1,4 @@
-package com.hybris.homeserver.database.cloud;
+package com.hybris.homeserver.endpoints.http.cloud;
 
 import java.io.IOException;
 import java.nio.file.Files;
