@@ -42,19 +42,17 @@
 							th:value="${dir} + '/' + ${file.filename}"
 							class="removedBtnStyle"
 						>
-							<img
-								th:src="@{'/images/' + ${file.iconname}}"
-								width=24
-								height=24
-								class="marginRight"
-							>
-							<span 
-								th:text="${file.filename}"
-								class="textBlueUnderlined">
-							</span>
-						</button>
-						
-						<button th:unless="${file.filename == '..'}" class="marginLeftAuto">
+						<span 
+							th:text="${file.filename}"
+							class="textBlueUnderlined">
+						</span>
+					</button>
+					
+					<a 
+						th:href="@{/cloud/download(path=${dir + '/' + file.filename})}"
+						class="marginLeftAuto"
+					>
+						<button th:unless="${file.filename == '..'}">
 						    <img
 								th:src="@{/images/iconDownload.png}"
 								width=24
