@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,44 +26,57 @@ public class CloudController {
 	private final String ICON_NAME_IMG		= "icon_img.ico";
 	private final String ICON_NAME_TXT		= "icon_txt.ico";
 	private final String ICON_NAME_OTHER	= "icon_other.ico";
+	
+	private final CloudStorageService storageService;
+	
+	@Autowired
+	public CloudController(CloudStorageService storageService) {
+		this.storageService = storageService;
+	}
 
 	@GetMapping
 	public String getFiles(HttpSession session, Model model) {
 		// Load path from session.
 		String path = (String) session.getAttribute("path");
 		
+		
 		Path p;
 		
 		try {
-			if(path == null || path.isBlank() || !isPathLegal(path)) {
-				p = Paths.get(getDefaultPath()).toRealPath();
+			if(path == null || path.isBlank() || !storageService.isPathLegal(path)) {
+				p = storageService.getUserRoot();
 			} else {
-				p = Paths.get(path).toRealPath();
+				p = Paths.get(path).normalize();
 			}
-		} catch(IOException | InvalidPathException e) {
-			p = Paths.get(getDefaultPath()).toAbsolutePath();
+		} catch(InvalidPathException e) {
+			p = storageService.getUserRoot();
 		}
+		
+		
+		//storageService.setCurrentLocation(p);
 
 		// Collect all filenames and iconnames of the path.
 		List<CloudFile> files = buildFilenames(p);
 		
 		// Store filenames, iconnames and current path in model for Thymeleaf.
 		model.addAttribute("files", files);
-		model.addAttribute("dir", p.toAbsolutePath().toString());
+		model.addAttribute("dir", p.toString());
 		
 		return "cloud";
 	}
 	
 	@PostMapping
 	public String open(@RequestParam("path") String dir, HttpSession session) {
+		
 		String path;
 		try {
-			Path p = Paths.get(dir).toRealPath();
-			path = isPathLegal(p)
+			Path p = Paths.get(dir).normalize();
+			path = storageService.isPathLegal(p)
 					? p.toString() 
-					: getDefaultPath();
-		} catch(IOException | InvalidPathException e) {
-			path = getDefaultPath();
+					: storageService.getUserRoot().toString();
+			
+		} catch(InvalidPathException | IllegalPathException e) {
+			path = storageService.getUserRoot().toString();
 		}
 		
 		// Store navigated path into session.
@@ -85,32 +99,11 @@ public class CloudController {
 		}
 		
 		// Insert parent-navigation as first entry, only if in subdir of user-root.
-		if(!isPathUserRoot(p)) {
+		if(!storageService.isPathUserRoot(p)) {
 			files.add(0, new CloudFile("..", ICON_NAME_FOLDER));
 		}
 		
 		return files;
-	}
-	
-	private boolean isPathUserRoot(Path p) {
-		// TODO: Replace with user-root dir
-		Path userRoot = Paths.get("/");
-		
-		return p.equals(userRoot);
-	}
-	
-	private boolean isPathLegal(Path p) {
-		// TODO: Check for existing path
-		// TODO: Check for subdirectory of user-root
-		return true;
-	}
-	
-	private boolean isPathLegal(String p) {
-		try {
-			return isPathLegal(Paths.get(p).toRealPath());
-		} catch(IOException | InvalidPathException e) {
-			return false;
-		}
 	}
 	
 	private String getFileIconName(Path path) {
@@ -136,10 +129,5 @@ public class CloudController {
 			default:
 				return ICON_NAME_OTHER;
 		}
-	}
-	
-	private String getDefaultPath() {
-		// TODO: Replace with user-root dir
-		return "/home";
 	}
 }
