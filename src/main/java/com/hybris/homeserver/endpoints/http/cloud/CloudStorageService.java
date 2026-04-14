@@ -7,8 +7,12 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.hybris.homeserver.endpoints.http.cloud.download.FilenameAwareByteArrayResource;
 
 @Service
 public class CloudStorageService {
@@ -33,6 +37,18 @@ public class CloudStorageService {
 		try(InputStream istream = file.getInputStream()) {
 			Files.copy(istream, destination, StandardCopyOption.REPLACE_EXISTING);
 		}
+	}
+	
+	public Resource load(String filepath) throws InvalidPathException, IOException {
+		Path path = Paths.get(filepath).normalize().toAbsolutePath();
+		
+		if(!isPathLegal(path)) {
+			throw new IllegalPathException("Illegal path: " + path.toString());
+		}
+		
+		return new FilenameAwareByteArrayResource(
+				path.getFileName().toString(),
+				Files.readAllBytes(path));
 	}
 	
 	public Path getUserRoot() {
