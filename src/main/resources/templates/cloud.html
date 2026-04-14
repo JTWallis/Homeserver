@@ -27,21 +27,21 @@
 							type="submit"
 							name="path"
 							th:value="${dir} + '/' + ${file.filename}"
-							class="btnFile"
+							class="removedBtnStyle"
 						>
 							<img
 								th:src="@{'/images/' + ${file.iconname}}"
 								width=24
 								height=24
-								class="imgFile"
+								class="marginRight"
 							>
 							<span 
 								th:text="${file.filename}"
-								class="spanFile">
+								class="textBlueUnderlined">
 							</span>
 						</button>
 						
-						<button th:unless="${file.filename == '..'}" class="btnDownload">
+						<button th:unless="${file.filename == '..'}" class="marginLeftAuto">
 						    <img
 								th:src="@{/images/iconDownload.png}"
 								width=24
@@ -71,7 +71,51 @@
 	    button:hover {
 	        cursor: pointer;
 	    }
+		
+		.marginRight {
+		    margin-right: 8px;
+		}
 
+		.flexAlignCenter {
+		    display: flex;
+		    align-items: center;
+		}
+		
+		.alignSelfEnd {
+			align-self: end;
+		}
+
+		.hoverPointer :hover {
+		    cursor:pointer;        
+		}
+		
+		.textBlueUnderlined {
+			color: blue;
+			text-decoration: underline;
+		}
+		
+		.removedBtnStyle {
+			border: none;
+			background-color: inherit;
+		}
+
+		.marginLeftAuto {
+			margin-left: auto;
+		}
+		
+
+		.overflowEllipsis {
+		    display: block;
+		    text-overflow: ellipsis;     
+		    overflow: hidden;   
+		    white-space: nowrap;
+		}
+
+		.errorText {
+		    color: red;      
+		    font-size: 0.8rem;  
+		}
+		
 	    .header {
 	        display: flex;
 	        width: 100%;
@@ -79,29 +123,19 @@
 	        justify-content: space-between;
 	    }
 		
+		.headerUpload {
+			width: 50%;
+		}
+		
+		.inputUpload {
+			max-width: 100%;
+		}
+		
 		.fileRow {
 		    display: flex;
 		    width: 100%;
 		    margin-top: 4px;
 		    margin-bottom: 4px;
 		}
-
-	    .imgFile {
-	        margin-right: 8px;        
-	    }
-		
-		.spanFile {
-		    color: blue;
-		    text-decoration: underline;
-		}
-
-	    .btnFile {
-	        border: none;
-	        background-color: inherit;
-	    }
-
-	    .btnDownload {
-	        margin-left: auto;
-	    }
 	</style>
 </html>
