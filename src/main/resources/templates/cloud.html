@@ -7,11 +7,24 @@
 		<h1>Filesystem</h1>
 		
 		<div class="header">
-		    <button>
-		        <img th:src="@{/images/icon_upload.png}" height=24 width=24>
-		        <span>Upload file</span>
-		    </button>
-		    <form th:action="@{/cloud/logout}" method="post">
+			<form
+				th:action="@{/cloud/upload}"
+				method="post"
+				enctype="multipart/form-data"
+				class="headerUpload"
+			>
+			    <label for="fileUpload" class="flexAlignCenter marginRight hoverPointer">
+			        <img th:src="@{/images/icon_upload.png}" height=24 width=24>
+			        <span>Upload file:</span>
+			    </label>
+			    <span th:text="${uploadErrorMsg}" class="overflowEllipsis errorText"></span>
+			    <input type="file" name="file" class="hoverPointer inputUpload">
+			    <div>
+			        <input type="submit" value="Upload" class="alignRight">
+			    </div>
+			</form>
+
+		    <form th:action="@{/cloud/logout}" method="post" class="alignSelfEnd">
 			    <input type="submit" value="Sign out" />
 		    </form>
 		</div>
