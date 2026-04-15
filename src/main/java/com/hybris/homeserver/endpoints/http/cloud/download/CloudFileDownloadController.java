@@ -42,7 +42,7 @@ public class CloudFileDownloadController {
 		
 		
 		try {
-			resource = storageService.load(filepath);
+			resource = storageService.loadAsResource(filepath);
 			contentLength = resource.contentLength();
 		} catch(FileSizeLimitExceededException e) {
 			
