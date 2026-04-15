@@ -181,6 +181,26 @@ public class CloudStorageService {
 		return getUserRoot().equals(p);
 	}
 	
+	public Path getLegalPath(String path) {
+		if(path == null || path.isBlank()) {
+			return getUserRoot();
+		}
+		
+		Path p;
+		
+		try {
+			p = Paths.get(path).normalize();
+		} catch(InvalidPathException e) {
+			return getUserRoot();
+		}
+		
+		if(!isPathLegal(p)) {
+			return getUserRoot();
+		}
+		
+		return p;
+	}
+	
 	public boolean isPathLegal(Path p)  {
 		// TODO: Check for subdirectory of user-root
 		return true;
