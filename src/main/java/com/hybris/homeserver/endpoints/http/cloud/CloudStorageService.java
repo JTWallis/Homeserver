@@ -45,10 +45,58 @@ public class CloudStorageService {
 		if(!isPathLegal(path)) {
 			throw new IllegalPathException("Illegal path: " + path.toString());
 		}
+
+		String fileName = path.getFileName().toString();
+		byte[] fileBytes;
 		
-		return new FilenameAwareByteArrayResource(
-				path.getFileName().toString(),
-				Files.readAllBytes(path));
+		if(Files.isDirectory(path)) {
+			fileName += ".zip";
+			fileBytes = pack(path);
+		} else {
+			if(!isDownloadFileSizeLegal(Files.size(path))) {
+				throw new FileSizeLimitExceededException(filepath, -1, MAX_DOWNLOAD_SIZE);
+			}
+			
+			fileBytes = Files.readAllBytes(path);
+		}
+		
+		return new FilenameAwareByteArrayResource(fileName, fileBytes);	
+	}
+	
+	private byte[] pack(Path folderPath) throws FileSizeLimitExceededException, IOException {
+		byte[] result;
+		long bytesSum = 0;
+		
+		try (ByteArrayOutputStream bstream = new ByteArrayOutputStream()) {
+			try (ZipOutputStream zstream = new ZipOutputStream(bstream)) {
+				
+				Iterator<Path> iter = 
+						Files.walk(folderPath)
+						.filter(path -> !Files.isDirectory(path))
+						.iterator();
+				
+				while(iter.hasNext()) {
+					Path path = iter.next();
+					
+					// Check folder size here, to not walk recursively twice.
+					bytesSum += Files.size(path);
+					if(!isDownloadFileSizeLegal(bytesSum)) {
+						throw new FileSizeLimitExceededException(folderPath.toString(), -1, MAX_DOWNLOAD_SIZE);
+					}
+					
+					ZipEntry zipEntry = new ZipEntry(folderPath.relativize(path).toString());
+					zstream.putNextEntry(zipEntry);
+					Files.copy(path, zstream);
+					zstream.closeEntry();
+				}
+			}
+			result = bstream.toByteArray();
+		}
+		return result;
+	}
+	
+	private boolean isDownloadFileSizeLegal(long bytes) {
+		return bytes <= MAX_DOWNLOAD_SIZE;
 	}
 	
 	public Path getUserRoot() {
