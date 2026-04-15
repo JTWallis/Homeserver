@@ -16,6 +16,8 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.core.io.Resource;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,6 +31,7 @@ public class CloudStorageService {
 	private final String ICON_NAME_IMG		= "icon_img.ico";
 	private final String ICON_NAME_TXT		= "icon_txt.ico";
 	private final String ICON_NAME_OTHER	= "icon_other.ico";
+	private final String DIR_USER_ROOTS		= "/home/.users/";
 	
 	public List<CloudFile> loadAsCloudFiles(String filepath) {
 		Path path = getLegalPath(filepath);
@@ -104,8 +107,13 @@ public class CloudStorageService {
 			files = List.of();
 		}
 		
-		// Insert parent-navigation as first entry, only if in subdir of user-root.
-		if(!isPathUserRoot(p)) {
+		// Insert parent-navigation as first entry, only if either
+		//   a) User is     an admin and is below the real root directory
+		//   b) User is not an admin and is below the user root directory
+		boolean isUserAdmin = isUserAdmin();
+		if( (isUserAdmin && !p.equals(Paths.get("/")) ) ||
+			(!isUserAdmin && !isPathUserRoot(p)) ) 
+		{
 			files.add(0, new CloudFile("..", ICON_NAME_FOLDER));
 		}
 		
@@ -174,7 +182,24 @@ public class CloudStorageService {
 	}
 	
 	public Path getUserRoot() {
-		return Paths.get("/");
+		String username = SecurityContextHolder.getContext()
+				.getAuthentication()
+				.getName();
+		
+		if(username == null || username.isBlank()) {
+			throw new UsernameNotFoundException("Could not find username in getUserRoot!");
+		}
+		
+		return Paths.get(DIR_USER_ROOTS + username);
+	}
+	
+	private boolean isUserAdmin() {
+		return SecurityContextHolder
+				.getContext()
+				.getAuthentication()
+				.getAuthorities()
+				.stream()
+				.anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
 	}
 	
 	public boolean isPathUserRoot(Path p) {
@@ -202,7 +227,18 @@ public class CloudStorageService {
 	}
 	
 	public boolean isPathLegal(Path p)  {
-		// TODO: Check for subdirectory of user-root
+		try {
+			p = p.toRealPath();
+		} catch(IOException e) {
+			return false;
+		}
+		
+		Path userRoot = getUserRoot();
+		
+		if(!isUserAdmin() && !p.startsWith(userRoot)) {
+			return false;
+		}
+		
 		return true;
 	}
 	
