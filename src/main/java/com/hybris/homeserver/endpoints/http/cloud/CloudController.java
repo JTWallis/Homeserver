@@ -93,6 +93,16 @@ public class CloudController {
 			files = Files.walk(p, 1)
 					.skip(1)
 					.map(f -> new CloudFile(f.getFileName().toString(), getFileIconName(f)))
+					.sorted((cf1, cf2) -> {
+						// Faster to sort by dir via checking Strings rather
+						//   than calling Files.isDirectory() due to no IO overhead.
+						boolean cf1Dir = cf1.getIconname().equals(ICON_NAME_FOLDER);
+						boolean cf2Dir = cf2.getIconname().equals(ICON_NAME_FOLDER);
+						if( cf1Dir && !cf2Dir) return -1;
+						if(!cf1Dir &&  cf2Dir) return 1;
+						return cf1.getFilename().toString().toLowerCase()
+								.compareTo(cf2.getFilename().toString().toLowerCase());
+					})
 					.collect(Collectors.toList());
 		} catch (IOException e) {
 			files = List.of();
