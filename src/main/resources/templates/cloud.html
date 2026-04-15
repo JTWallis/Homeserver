@@ -42,7 +42,7 @@
 						type="submit"
 						name="path"
 						th:value="${dir} + '/' + ${file.filename}"
-						class="removedBtnStyle"
+						class="removedBtnStyle btnFile"
 					>
 						<img
 							th:src="@{'/images/' + ${file.iconname}}"
@@ -52,10 +52,10 @@
 						>
 						<span 
 							th:text="${file.filename}"
-							class="textBlueUnderlined">
+							class="textBlueUnderlined overflowEllipsis">
 						</span>
 					</button>
-					
+					<hr th:unless="${file.filename == '..'}" class="hrFile marginRight">
 					<a 
 						th:href="@{/cloud/download(path=${dir + '/' + file.filename})}"
 						class="marginLeftAuto"
@@ -121,7 +121,6 @@
 		.marginLeftAuto {
 			margin-left: auto;
 		}
-		
 
 		.overflowEllipsis {
 		    display: block;
@@ -129,7 +128,7 @@
 		    overflow: hidden;   
 		    white-space: nowrap;
 		}
-
+		
 		.errorText {
 		    color: red;      
 		    font-size: 0.8rem;  
@@ -155,6 +154,17 @@
 		    width: 100%;
 		    margin-top: 4px;
 		    margin-bottom: 4px;
+		}
+		
+		.btnFile {
+			max-width: 90%;
+		}
+
+		.hrFile {
+			size: 1px;
+			width: 100%;
+			align-self: center;
+			border: 1px dashed silver;
 		}
 	</style>
 </html>
