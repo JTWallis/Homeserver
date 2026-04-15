@@ -187,6 +187,10 @@ public class CloudStorageService {
 	}
 	
 	public boolean isPathLegal(String p) {
+		if(p == null || p.isBlank()) {
+			return false;
+		}
+		
 		try {
 			return isPathLegal(Paths.get(p).normalize());
 		} catch(InvalidPathException e) {
