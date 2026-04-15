@@ -57,7 +57,7 @@ public class CloudStorageService {
 		return buildFilenames(path);
 	}
 	
-	public Resource load(String filepath) throws InvalidPathException, IOException, FileSizeLimitExceededException {
+	public Resource loadAsResource(String filepath) throws InvalidPathException, IOException, FileSizeLimitExceededException {
 		Path path = Paths.get(filepath).normalize().toAbsolutePath();
 		
 		if(!isPathLegal(path)) {
