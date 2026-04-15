@@ -34,7 +34,7 @@ public class CloudFileDownloadController {
 	@GetMapping("/cloud/download")
 	public Object download(@RequestParam("path") String filepath, RedirectAttributes redirectAttributes, HttpServletRequest request) {
 		if(filepath == null || filepath.isBlank()) {
-			System.out.println("Download filepath null");
+			return ResponseEntity.notFound().build();
 		}
 		
 		Resource resource;
