@@ -16,6 +16,8 @@ import java.util.zip.ZipOutputStream;
 
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.core.io.Resource;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,6 +31,7 @@ public class CloudStorageService {
 	private final String ICON_NAME_IMG		= "icon_img.ico";
 	private final String ICON_NAME_TXT		= "icon_txt.ico";
 	private final String ICON_NAME_OTHER	= "icon_other.ico";
+	private final String DIR_USER_ROOTS		= "/home/.users/";
 	
 	public List<CloudFile> loadAsCloudFiles(String filepath) {
 		Path path = getLegalPath(filepath);
@@ -174,7 +177,24 @@ public class CloudStorageService {
 	}
 	
 	public Path getUserRoot() {
-		return Paths.get("/");
+		String username = SecurityContextHolder.getContext()
+				.getAuthentication()
+				.getName();
+		
+		if(username == null || username.isBlank()) {
+			throw new UsernameNotFoundException("Could not find username in getUserRoot!");
+		}
+		
+		return Paths.get(DIR_USER_ROOTS + username);
+	}
+	
+	private boolean isUserAdmin() {
+		return SecurityContextHolder
+				.getContext()
+				.getAuthentication()
+				.getAuthorities()
+				.stream()
+				.anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
 	}
 	
 	public boolean isPathUserRoot(Path p) {
@@ -202,7 +222,18 @@ public class CloudStorageService {
 	}
 	
 	public boolean isPathLegal(Path p)  {
-		// TODO: Check for subdirectory of user-root
+		try {
+			p = p.toRealPath();
+		} catch(IOException e) {
+			return false;
+		}
+		
+		Path userRoot = getUserRoot();
+		
+		if(!p.startsWith(userRoot)) {
+			return false;
+		}
+		
 		return true;
 	}
 	
