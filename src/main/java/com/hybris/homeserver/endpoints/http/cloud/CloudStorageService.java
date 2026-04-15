@@ -107,8 +107,13 @@ public class CloudStorageService {
 			files = List.of();
 		}
 		
-		// Insert parent-navigation as first entry, only if in subdir of user-root.
-		if(!isPathUserRoot(p)) {
+		// Insert parent-navigation as first entry, only if either
+		//   a) User is     an admin and is below the real root directory
+		//   b) User is not an admin and is below the user root directory
+		boolean isUserAdmin = isUserAdmin();
+		if( (isUserAdmin && !p.equals(Paths.get("/")) ) ||
+			(!isUserAdmin && !isPathUserRoot(p)) ) 
+		{
 			files.add(0, new CloudFile("..", ICON_NAME_FOLDER));
 		}
 		
@@ -230,7 +235,7 @@ public class CloudStorageService {
 		
 		Path userRoot = getUserRoot();
 		
-		if(!p.startsWith(userRoot)) {
+		if(!isUserAdmin() && !p.startsWith(userRoot)) {
 			return false;
 		}
 		
