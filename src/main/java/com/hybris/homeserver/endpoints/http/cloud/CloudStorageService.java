@@ -1,5 +1,6 @@
 package com.hybris.homeserver.endpoints.http.cloud;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -7,7 +8,11 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Iterator;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,6 +22,8 @@ import com.hybris.homeserver.endpoints.http.cloud.download.FilenameAwareByteArra
 @Service
 public class CloudStorageService {
 
+	private final long MAX_DOWNLOAD_SIZE = 128 * 1024 * 1024;	// 128 MB.
+	
 	public void store(String location, MultipartFile file) throws IOException, InvalidPathException, IllegalPathException {
 		if(location == null || location.isBlank() || file.isEmpty()) {
 			return;
@@ -39,7 +46,7 @@ public class CloudStorageService {
 		}
 	}
 	
-	public Resource load(String filepath) throws InvalidPathException, IOException {
+	public Resource load(String filepath) throws InvalidPathException, IOException, FileSizeLimitExceededException {
 		Path path = Paths.get(filepath).normalize().toAbsolutePath();
 		
 		if(!isPathLegal(path)) {

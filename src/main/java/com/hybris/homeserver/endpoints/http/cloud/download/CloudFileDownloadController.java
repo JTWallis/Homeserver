@@ -3,6 +3,7 @@ package com.hybris.homeserver.endpoints.http.cloud.download;
 import java.io.IOException;
 import java.nio.file.InvalidPathException;
 
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.hybris.homeserver.endpoints.http.api.ErrorResponseDto;
 import com.hybris.homeserver.endpoints.http.cloud.CloudStorageService;
@@ -30,7 +32,7 @@ public class CloudFileDownloadController {
 	}
 
 	@GetMapping("/cloud/download")
-	public ResponseEntity<?> download(@RequestParam("path") String filepath, HttpServletRequest request) {
+	public Object download(@RequestParam("path") String filepath, RedirectAttributes redirectAttributes, HttpServletRequest request) {
 		if(filepath == null || filepath.isBlank()) {
 			System.out.println("Download filepath null");
 		}
@@ -38,9 +40,16 @@ public class CloudFileDownloadController {
 		Resource resource;
 		long contentLength;
 		
+		
 		try {
 			resource = storageService.load(filepath);
 			contentLength = resource.contentLength();
+		} catch(FileSizeLimitExceededException e) {
+			
+			// TODO: Add general error message display
+			redirectAttributes.addFlashAttribute("uploadErrorMsg", "Filesize exceeded max. download size (128 MB)");
+			
+			return "redirect:/cloud";
 		} catch(InvalidPathException | IllegalPathException e) {
 			return ResponseEntity.notFound().build();
 		} catch(IOException e) {
