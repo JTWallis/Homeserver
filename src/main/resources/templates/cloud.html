@@ -6,7 +6,7 @@
 	<body>
 		<h1>Filesystem</h1>
 		
-		<div class="header">
+		<div class="headerControls">
 			<form
 				th:action="@{/cloud/upload}"
 				method="post"
@@ -28,7 +28,7 @@
 			    <input type="submit" value="Sign out" />
 		    </form>
 		</div>
-		
+
 		<hr>
 		
 		<form id="formNavigate" th:action="@{/cloud}" method="post" ></form>
@@ -133,8 +133,8 @@
 		    color: red;      
 		    font-size: 0.8rem;  
 		}
-		
-	    .header {
+
+	    .headerControls {
 	        display: flex;
 	        width: 100%;
 	        align-items: center;
