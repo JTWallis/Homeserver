@@ -71,7 +71,7 @@
 					</button>
 					<hr th:unless="${file.filename == '..'}" class="hrFile marginRight">
 					<a 
-						th:href="@{/cloud/download(path=${dir + '/' + file.filename})}"
+						th:href="@{/cloud/download(path=${dir}, filename=${file.filename})}"
 						class="marginLeftAuto"
 					>
 						<button th:unless="${file.filename == '..'}">
