@@ -33,14 +33,13 @@ public class CloudStorageService {
 	private final String ICON_NAME_OTHER	= "icon_other.ico";
 	private final String DIR_USER_ROOTS		= "/home/.users/";
 	
-	public List<CloudFile> loadAsCloudFiles(String filepath) {
-		Path path = getLegalPath(filepath);
-		return buildFilenames(path);
+	public List<CloudFile> loadAsCloudFiles(Path absolutePath) {
+		return buildFilenames(absolutePath);
 	}
 	
-	public Resource loadAsResource(String filepath) throws InvalidPathException, IOException, FileSizeLimitExceededException {
-		Path path = Paths.get(filepath).normalize().toAbsolutePath();
-		
+	public Resource loadAsResource(String filepath, String filename) throws InvalidPathException, IOException, FileSizeLimitExceededException {
+		Path path = resolveLegalAbsolutePath(filepath, filename);
+
 		if(!isPathLegal(path)) {
 			throw new IllegalPathException("Illegal path: " + path.toString());
 		}
@@ -62,22 +61,23 @@ public class CloudStorageService {
 		return new FilenameAwareByteArrayResource(fileName, fileBytes);	
 	}
 	
-	public void store(String location, MultipartFile file) throws IOException, InvalidPathException, IllegalPathException {
-		if(location == null || location.isBlank() || file.isEmpty()) {
+	public void store(String partialLocation, MultipartFile file) throws IOException, InvalidPathException, IllegalPathException {
+		if(partialLocation == null || partialLocation.isBlank() || file.isEmpty()) {
 			return;
 		}
 		
-		Path path = Paths.get(location);
+		// Build absolute path from partial dir.
+		//   On ROLE_USER remove leading "/".
+		Path dir = (isUserAdmin())
+				? Path.of(partialLocation)
+				: getUserRoot().resolve(partialLocation.substring(1));
 		
-		Path destination = path.resolve(
-				Paths.get(file.getOriginalFilename()))
-				.normalize()
-				.toAbsolutePath();
-		
-		// Security check destination path
-		if(!isPathLegal(destination) || !destination.getParent().equals(path.toAbsolutePath())) {
-			throw new IllegalPathException("Invalid path: " + destination.toString());
+		// Technically unnecessary security check but can never be unsure.
+		if(!isPathLegal(dir)) {
+			throw new IllegalPathException("Invalid path: " + dir.toString());
 		}
+		
+		Path destination = dir.resolve(file.getOriginalFilename());
 		
 		try(InputStream istream = file.getInputStream()) {
 			Files.copy(istream, destination, StandardCopyOption.REPLACE_EXISTING);
@@ -204,6 +204,68 @@ public class CloudStorageService {
 	
 	public boolean isPathUserRoot(Path p) {
 		return getUserRoot().equals(p);
+	}
+	
+	public Path resolveLegalAbsolutePath(String currentPartialDir, String navFilename) {
+		Path userRoot = getUserRoot();
+		
+		if(currentPartialDir == null || currentPartialDir.isBlank()) {
+			return userRoot;
+		}
+		
+		if(navFilename == null || navFilename.isBlank()) {
+			navFilename = ".";
+		}
+		
+		boolean isAdmin = isUserAdmin();
+		Path fullPath;
+		Path currentDirAbs;
+		
+		// Make partial dir an absolute path and resolve with with the navigated file.
+		try {
+			currentDirAbs = (isAdmin)
+					? Path.of(currentPartialDir)
+					: Path.of(userRoot.toString(), currentPartialDir);
+			
+			// Navigating into a file can never have another entry than ".." anyway.
+			if(!Files.isDirectory(currentDirAbs)) {
+				return currentDirAbs.getParent();
+			}
+			
+			// Resolve navigated path without special names like ".."
+			fullPath = currentDirAbs.resolve(navFilename).toRealPath();
+		} catch(InvalidPathException | IOException e) {
+			return userRoot;
+		}
+
+		// Security check if ROLE_USER tried navigating outside of user root.
+		if(!isAdmin && !fullPath.startsWith(userRoot)) {
+			return userRoot;
+		}
+		
+		return fullPath;
+	}
+	
+	public String getPartialPath(Path absolutePath) {
+		if(isUserAdmin()) {
+			return absolutePath.toString();
+		}
+		
+		Path userRoot = getUserRoot();
+		int userRootCount = userRoot.getNameCount();
+		int absPathCount = absolutePath.getNameCount();
+		
+		// Security check if ROLE_USER tried navigating outside of user root,
+		//   or subpath could not work since path is already user root.
+		if( (!absolutePath.startsWith(userRoot) ) || 
+				(absPathCount <= userRootCount) ) 
+		{
+			return "/";
+		}
+
+		// Get subpath with leading "/" and without username in path name.
+		//   E.g. "/.users/UserA/TestFolder" => "/TestFolder"
+		return "/" + absolutePath.subpath(userRoot.getNameCount(), absolutePath.getNameCount()).toString();
 	}
 	
 	public Path getLegalPath(String path) {
