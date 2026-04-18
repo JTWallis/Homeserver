@@ -206,6 +206,68 @@ public class CloudStorageService {
 		return getUserRoot().equals(p);
 	}
 	
+	public Path resolveLegalAbsolutePath(String currentPartialDir, String navFilename) {
+		Path userRoot = getUserRoot();
+		
+		if(currentPartialDir == null || currentPartialDir.isBlank()) {
+			return userRoot;
+		}
+		
+		if(navFilename == null || navFilename.isBlank()) {
+			navFilename = ".";
+		}
+		
+		boolean isAdmin = isUserAdmin();
+		Path fullPath;
+		Path currentDirAbs;
+		
+		// Make partial dir an absolute path and resolve with with the navigated file.
+		try {
+			currentDirAbs = (isAdmin)
+					? Path.of(currentPartialDir)
+					: Path.of(userRoot.toString(), currentPartialDir);
+			
+			// Navigating into a file can never have another entry than ".." anyway.
+			if(!Files.isDirectory(currentDirAbs)) {
+				return currentDirAbs.getParent();
+			}
+			
+			// Resolve navigated path without special names like ".."
+			fullPath = currentDirAbs.resolve(navFilename).toRealPath();
+		} catch(InvalidPathException | IOException e) {
+			return userRoot;
+		}
+
+		// Security check if ROLE_USER tried navigating outside of user root.
+		if(!isAdmin && !fullPath.startsWith(userRoot)) {
+			return userRoot;
+		}
+		
+		return fullPath;
+	}
+	
+	public String getPartialPath(Path absolutePath) {
+		if(isUserAdmin()) {
+			return absolutePath.toString();
+		}
+		
+		Path userRoot = getUserRoot();
+		int userRootCount = userRoot.getNameCount();
+		int absPathCount = absolutePath.getNameCount();
+		
+		// Security check if ROLE_USER tried navigating outside of user root,
+		//   or subpath could not work since path is already user root.
+		if( (!absolutePath.startsWith(userRoot) ) || 
+				(absPathCount <= userRootCount) ) 
+		{
+			return "/";
+		}
+
+		// Get subpath with leading "/" and without username in path name.
+		//   E.g. "/.users/UserA/TestFolder" => "/TestFolder"
+		return "/" + absolutePath.subpath(userRoot.getNameCount(), absolutePath.getNameCount()).toString();
+	}
+	
 	public Path getLegalPath(String path) {
 		if(path == null || path.isBlank()) {
 			return getUserRoot();
