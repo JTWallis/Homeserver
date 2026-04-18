@@ -38,9 +38,10 @@ public class CloudController {
 	}
 	
 	@PostMapping
-	public String open(@RequestParam("path") String dir, HttpSession session) {
+	public String open(@RequestParam("path") String dir, @RequestParam("filename") String filename, HttpSession session) {
 		// Store navigated path into session.
-		session.setAttribute("path", storageService.getLegalPath(dir).toString());
+		session.setAttribute("path", dir);
+		session.setAttribute("nav_filename", filename);
 		
 		return "redirect:/cloud";
 	}
