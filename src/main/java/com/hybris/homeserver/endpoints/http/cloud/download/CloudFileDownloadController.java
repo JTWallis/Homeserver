@@ -32,8 +32,8 @@ public class CloudFileDownloadController {
 	}
 
 	@GetMapping("/cloud/download")
-	public Object download(@RequestParam("path") String filepath, RedirectAttributes redirectAttributes, HttpServletRequest request) {
-		if(filepath == null || filepath.isBlank()) {
+	public Object download(@RequestParam("path") String filepath, @RequestParam("filename") String filename, RedirectAttributes redirectAttributes, HttpServletRequest request) {
+		if(filepath == null || filepath.isBlank() || filename == null || filepath.isBlank()) {
 			return ResponseEntity.notFound().build();
 		}
 		
@@ -42,7 +42,7 @@ public class CloudFileDownloadController {
 		
 		
 		try {
-			resource = storageService.loadAsResource(filepath);
+			resource = storageService.loadAsResource(filepath, filename);
 			contentLength = resource.contentLength();
 		} catch(FileSizeLimitExceededException e) {
 			
