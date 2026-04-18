@@ -33,9 +33,8 @@ public class CloudStorageService {
 	private final String ICON_NAME_OTHER	= "icon_other.ico";
 	private final String DIR_USER_ROOTS		= "/home/.users/";
 	
-	public List<CloudFile> loadAsCloudFiles(String filepath) {
-		Path path = getLegalPath(filepath);
-		return buildFilenames(path);
+	public List<CloudFile> loadAsCloudFiles(Path absolutePath) {
+		return buildFilenames(absolutePath);
 	}
 	
 	public Resource loadAsResource(String filepath) throws InvalidPathException, IOException, FileSizeLimitExceededException {
