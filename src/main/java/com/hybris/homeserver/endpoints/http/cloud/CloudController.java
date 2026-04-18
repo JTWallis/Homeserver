@@ -39,6 +39,10 @@ public class CloudController {
 		model.addAttribute("files", files);
 		model.addAttribute("dir", pathPartial);
 		
+		// Update current dir for upload and reset navigation for redirects from other controllers.
+		session.setAttribute("path", pathPartial);
+		session.setAttribute("nav_filename", ".");
+		
 		return "cloud";
 	}
 	
