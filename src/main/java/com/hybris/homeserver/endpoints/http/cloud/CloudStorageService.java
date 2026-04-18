@@ -61,22 +61,23 @@ public class CloudStorageService {
 		return new FilenameAwareByteArrayResource(fileName, fileBytes);	
 	}
 	
-	public void store(String location, MultipartFile file) throws IOException, InvalidPathException, IllegalPathException {
-		if(location == null || location.isBlank() || file.isEmpty()) {
+	public void store(String partialLocation, MultipartFile file) throws IOException, InvalidPathException, IllegalPathException {
+		if(partialLocation == null || partialLocation.isBlank() || file.isEmpty()) {
 			return;
 		}
 		
-		Path path = Paths.get(location);
+		// Build absolute path from partial dir.
+		//   On ROLE_USER remove leading "/".
+		Path dir = (isUserAdmin())
+				? Path.of(partialLocation)
+				: getUserRoot().resolve(partialLocation.substring(1));
 		
-		Path destination = path.resolve(
-				Paths.get(file.getOriginalFilename()))
-				.normalize()
-				.toAbsolutePath();
-		
-		// Security check destination path
-		if(!isPathLegal(destination) || !destination.getParent().equals(path.toAbsolutePath())) {
-			throw new IllegalPathException("Invalid path: " + destination.toString());
+		// Technically unnecessary security check but can never be unsure.
+		if(!isPathLegal(dir)) {
+			throw new IllegalPathException("Invalid path: " + dir.toString());
 		}
+		
+		Path destination = dir.resolve(file.getOriginalFilename());
 		
 		try(InputStream istream = file.getInputStream()) {
 			Files.copy(istream, destination, StandardCopyOption.REPLACE_EXISTING);
