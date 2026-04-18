@@ -40,6 +40,13 @@
 		
 		<form id="formNavigate" th:action="@{/cloud}" method="post" ></form>
 		
+		<input
+			type="hidden"
+			form="formNavigate"
+			name="path"
+			th:value="${dir}" 
+		/>
+		
 		<ul>
 			<li th:each="file : ${files}">
 				<div class="fileRow">
@@ -47,8 +54,8 @@
 					<button
 						form="formNavigate"
 						type="submit"
-						name="path"
-						th:value="${dir} + '/' + ${file.filename}"
+						name="filename"
+						th:value="${file.filename}"
 						class="removedBtnStyle btnFile"
 					>
 						<img
