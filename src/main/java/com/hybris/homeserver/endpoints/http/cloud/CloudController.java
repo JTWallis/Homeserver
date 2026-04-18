@@ -1,5 +1,6 @@
 package com.hybris.homeserver.endpoints.http.cloud;
 
+import java.nio.file.Path;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,14 +26,18 @@ public class CloudController {
 	@GetMapping
 	public String getFiles(HttpSession session, Model model) {
 		// Load path from session.
-		String path = (String) session.getAttribute("path");
-
+		String currentPartialDir = (String) session.getAttribute("path");
+		String navFilename = (String) session.getAttribute("nav_filename");
+		
+		Path pathAbsolute = storageService.resolveLegalAbsolutePath(currentPartialDir, navFilename);
+		String pathPartial = storageService.getPartialPath(pathAbsolute);
+		
 		// Collect all filenames and iconnames of the path.
-		List<CloudFile> files = storageService.loadAsCloudFiles(path);
+		List<CloudFile> files = storageService.loadAsCloudFiles(pathAbsolute);
 		
 		// Store filenames, iconnames and current path in model for Thymeleaf.
 		model.addAttribute("files", files);
-		model.addAttribute("dir", storageService.getLegalPath(path).toString());
+		model.addAttribute("dir", pathPartial);
 		
 		return "cloud";
 	}
