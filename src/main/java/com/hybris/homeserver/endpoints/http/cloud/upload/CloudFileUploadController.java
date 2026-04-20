@@ -32,9 +32,15 @@ public class CloudFileUploadController {
 		try {
 			storageService.store(path, file);
 		} catch(IllegalPathException | InvalidPathException e) {
-			redirectAttributes.addFlashAttribute("uploadErrorMsg", "Invalid path!");
+			redirectAttributes.addFlashAttribute(
+					CloudAttribConstants.REDIRECT_ERROR_MSG,
+					"Invalid path!"
+			);
 		} catch(IOException e) {
-			redirectAttributes.addFlashAttribute("uploadErrorMsg", "Error on path validation!");
+			redirectAttributes.addFlashAttribute(
+					CloudAttribConstants.REDIRECT_ERROR_MSG,
+					"Error on path validation!"
+			);
 		}
 		
 		return "redirect:/cloud";

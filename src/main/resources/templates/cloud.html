@@ -18,7 +18,7 @@
 				        <img th:src="@{/images/icon_upload.png}" height=24 width=24>
 				        <span>Upload file:</span>
 				    </label>
-				    <span th:text="${errorUpload}" class="overflowEllipsis errorText"></span>
+				    <span th:text="${errorMsg}" class="overflowEllipsis errorText"></span>
 				    <input type="file" name="file" class="hoverPointer inputUpload">
 				    <div>
 				        <input type="submit" value="Upload" class="alignRight">

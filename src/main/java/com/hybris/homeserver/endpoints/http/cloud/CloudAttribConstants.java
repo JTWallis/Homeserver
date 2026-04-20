@@ -7,5 +7,7 @@ public class CloudAttribConstants {
 	public static final String MODEL_FILES = "files";
 	public static final String MODEL_DIR = "dir";
 	
+	public static final String REDIRECT_ERROR_MSG = "errorMsg";
+	
 	private CloudAttribConstants() {}
 }
