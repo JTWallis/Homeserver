@@ -15,10 +15,14 @@ public class CloudLoginEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@Column(unique = true)
+	@Column(unique = true, nullable = false)
 	private String username;
 	
+	@Column(nullable = false)
 	private String password;
+	
+	@Column(nullable = false)
+	private String role = "USER";
 
 	public long getId() {
 		return id;
@@ -42,5 +46,13 @@ public class CloudLoginEntity {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	
+	public String getRole() {
+		return role;
+	}
+	
+	public void setRole(String role) {
+		this.role = role;
 	}
 }
