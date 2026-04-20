@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.hybris.homeserver.endpoints.http.cloud.CloudAttribConstants;
 import com.hybris.homeserver.endpoints.http.cloud.CloudStorageService;
 import com.hybris.homeserver.endpoints.http.cloud.IllegalPathException;
 
@@ -26,7 +27,7 @@ public class CloudFileUploadController {
 	
 	@PostMapping("/cloud/upload")
 	public String uploadFile(@RequestParam("file") MultipartFile file,  RedirectAttributes redirectAttributes, HttpSession httpSession) {
-		String path = (String) httpSession.getAttribute("partial_dir");
+		String path = (String) httpSession.getAttribute(CloudAttribConstants.SESSION_PARTIAL_DIR);
 		
 		try {
 			storageService.store(path, file);
