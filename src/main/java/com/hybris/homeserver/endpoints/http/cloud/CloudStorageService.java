@@ -15,6 +15,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -32,6 +34,8 @@ public class CloudStorageService {
 	private final String ICON_NAME_TXT		= "icon_txt.ico";
 	private final String ICON_NAME_OTHER	= "icon_other.ico";
 	private final String DIR_USER_ROOTS		= "/home/.users/";
+	
+	private static final Logger logger = LoggerFactory.getLogger(CloudStorageService.class);
 	
 	public List<CloudFile> loadAsCloudFiles(Path absolutePath) {
 		return buildFilenames(absolutePath);
@@ -81,6 +85,14 @@ public class CloudStorageService {
 		
 		try(InputStream istream = file.getInputStream()) {
 			Files.copy(istream, destination, StandardCopyOption.REPLACE_EXISTING);
+		}
+	}
+	
+	public void createUserRoot(String username) {
+		try {
+			Files.createDirectory(Path.of(DIR_USER_ROOTS + username));
+		} catch (IOException e) {
+			logger.warn("Could not create Cloud user root dir for user '" + username + "' with exception: " + e.getMessage());
 		}
 	}
 	
