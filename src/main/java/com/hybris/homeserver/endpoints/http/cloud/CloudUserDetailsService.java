@@ -32,7 +32,7 @@ public class CloudUserDetailsService implements UserDetailsService {
 		return User.builder()
 				.username(entity.getUsername())
 				.password(entity.getPassword())
-				.roles("USER")
+				.roles(entity.getRole())
 				.build();
 	}
 	
