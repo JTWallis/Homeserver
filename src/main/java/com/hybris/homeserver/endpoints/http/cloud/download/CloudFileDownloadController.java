@@ -32,7 +32,7 @@ public class CloudFileDownloadController {
 	}
 
 	@GetMapping("/cloud/download")
-	public Object download(@RequestParam("path") String filepath, @RequestParam("filename") String filename, RedirectAttributes redirectAttributes, HttpServletRequest request) {
+	public Object download(@RequestParam("partial_dir") String filepath, @RequestParam("filename") String filename, RedirectAttributes redirectAttributes, HttpServletRequest request) {
 		if(filepath == null || filepath.isBlank() || filename == null || filepath.isBlank()) {
 			return ResponseEntity.notFound().build();
 		}
