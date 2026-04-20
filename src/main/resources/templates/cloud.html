@@ -18,7 +18,7 @@
 				        <img th:src="@{/images/icon_upload.png}" height=24 width=24>
 				        <span>Upload file:</span>
 				    </label>
-				    <span th:text="${uploadErrorMsg}" class="overflowEllipsis errorText"></span>
+				    <span th:text="${errorMsg}" class="overflowEllipsis errorText"></span>
 				    <input type="file" name="file" class="hoverPointer inputUpload">
 				    <div>
 				        <input type="submit" value="Upload" class="alignRight">
@@ -43,7 +43,7 @@
 		<input
 			type="hidden"
 			form="formNavigate"
-			name="path"
+			name="partial_dir"
 			th:value="${dir}" 
 		/>
 		
@@ -71,7 +71,7 @@
 					</button>
 					<hr th:unless="${file.filename == '..'}" class="hrFile marginRight">
 					<a 
-						th:href="@{/cloud/download(path=${dir}, filename=${file.filename})}"
+						th:href="@{/cloud/download(partial_dir=${dir}, filename=${file.filename})}"
 						class="marginLeftAuto"
 					>
 						<button th:unless="${file.filename == '..'}">
