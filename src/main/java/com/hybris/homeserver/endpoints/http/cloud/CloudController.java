@@ -26,7 +26,7 @@ public class CloudController {
 	@GetMapping
 	public String getFiles(HttpSession session, Model model) {
 		// Load path from session.
-		String currentPartialDir = (String) session.getAttribute("path");
+		String currentPartialDir = (String) session.getAttribute("partial_dir");
 		String navFilename = (String) session.getAttribute("nav_filename");
 		
 		Path pathAbsolute = storageService.resolveLegalAbsolutePath(currentPartialDir, navFilename);
@@ -40,7 +40,7 @@ public class CloudController {
 		model.addAttribute("dir", pathPartial);
 		
 		// Update current dir for upload and reset navigation for redirects from other controllers.
-		session.setAttribute("path", pathPartial);
+		session.setAttribute("partial_dir", pathPartial);
 		session.setAttribute("nav_filename", ".");
 		
 		return "cloud";
@@ -49,7 +49,7 @@ public class CloudController {
 	@PostMapping
 	public String open(@RequestParam("partial_dir") String partialDir, @RequestParam("filename") String filename, HttpSession session) {
 		// Store navigated path into session.
-		session.setAttribute("path", partialDir);
+		session.setAttribute("partial_dir", partialDir);
 		session.setAttribute("nav_filename", filename);
 		
 		return "redirect:/cloud";

@@ -26,7 +26,7 @@ public class CloudFileUploadController {
 	
 	@PostMapping("/cloud/upload")
 	public String uploadFile(@RequestParam("file") MultipartFile file,  RedirectAttributes redirectAttributes, HttpSession httpSession) {
-		String path = (String) httpSession.getAttribute("path");
+		String path = (String) httpSession.getAttribute("partial_dir");
 		
 		try {
 			storageService.store(path, file);
