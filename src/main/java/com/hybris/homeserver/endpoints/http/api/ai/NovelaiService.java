@@ -74,6 +74,7 @@ public class NovelaiService {
 			
 			if(requestJson == null) {
 				logger.warn("Loaded config is null for model " + model);
+				return null;
 			}
 			
 			logger.debug("Sending request body: " + requestJson);
