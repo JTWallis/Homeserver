@@ -88,6 +88,15 @@
 		    <version>0.13.0</version>
 		    <scope>runtime</scope>
 		</dependency>
+		
+		<!-- Sentencepiece for NovelAI tokenization -->
+		<dependency>
+		    <groupId>ai.djl.sentencepiece</groupId>
+		    <artifactId>sentencepiece</artifactId>
+		    <version>0.36.0</version>
+		    <scope>compile</scope>
+		</dependency>
+
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
