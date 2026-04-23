@@ -14,7 +14,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -43,65 +42,33 @@ public class NovelaiService {
 	private final String URL_STANDARD_TEXTGEN	= URL + "/ai/generate";
 	private final String URL_OAI_TEXTGEN 		= URL + "/oa/v1/completions";
 	
-	private final String MODEL_GLM = "glm-4-6";
-	private final String MODEL_KAYRA = "kayra-v1";
-	
 	@Value("${novelai.key}")
 	private String apiKey;
 	
 	private static final Logger logger = LoggerFactory.getLogger(NovelaiService.class);
 	
-	public NovelaiResponse prompt(String userInput, String model) {
+	public NovelaiResponse prompt(String requestJson, String requestUrl) {
 		try {
-			String url;
-			Function<String, String> parseResponseFunc;
-			String requestJson;
-			
-			switch(model) {
-				case MODEL_GLM:
-					url = URL_OAI_TEXTGEN;
-					parseResponseFunc = this::parseResponseOaiCompletion;
-					requestJson = loadConfigGlm(userInput);
-					break;
-				case MODEL_KAYRA:
-					url = URL_STANDARD_TEXTGEN;
-					parseResponseFunc = this::parseResponseStandard;
-					requestJson = loadConfigKayra(userInput);
-					break;
-				default:
-					return null;
-			}
-			
-			if(requestJson == null) {
-				logger.warn("Loaded config is null for model " + model);
-				return null;
-			}
-			
 			logger.debug("Sending request body: " + requestJson);
 			 
-			NovelaiResponse response = sendRequest(requestJson, url);
+			NovelaiResponse response = sendRequest(requestJson, requestUrl);
 			
 			HttpStatus status = HttpStatus.valueOf(response.getStatusCode());
-			if(status.is2xxSuccessful()) {
-				return new NovelaiResponse(
-						response.getStatusCode(),
-						parseResponseFunc.apply(response.getMessage())
-				);
-			} else if(status.is4xxClientError()) {
+			if(status.is4xxClientError()) {
 				return new NovelaiResponse(
 						response.getStatusCode(),
 						parseResponseError(response.getMessage())
 				);
 			}
+			
+			return response;
 		} catch (URISyntaxException e) {
-			logger.error("Could not send request to URL for model " + model + ": " + e.getMessage());
+			logger.error("Could not send request to URL " + requestUrl + ": " + e.getMessage());
 			return null;
 		} catch (IOException e) {
-			logger.error("Got IOException in NovelAI prompt for model " + model + ": " + e.getMessage());
+			logger.error("Got IOException in NovelAI prompt for URL " + requestUrl + ": " + e.getMessage());
 			return null;
 		}
-		
-		return null;
 	}
 	
 	public NovelaiResponse promptGlm(NovelaiPromptDto promptDto) {
@@ -111,8 +78,25 @@ public class NovelaiService {
 			userInput = userInput + "\n";
 		}
 		
-		NovelaiResponse response = prompt(userInput, MODEL_GLM);
-		String output = response.getMessage().trim();
+		String requestJson;
+		try {
+			requestJson = loadConfigGlm(userInput);
+		} catch(IOException e) {
+			logger.error("Could not load GLM config file: " + e.getMessage());
+			return null;
+		}
+		
+		NovelaiResponse response = prompt(requestJson, URL_OAI_TEXTGEN);
+		
+		if(response == null) {
+			return null;
+		}
+		
+		if(HttpStatus.valueOf(response.getStatusCode()).isError()) {
+			return response;
+		}
+		
+		String output = parseResponseOaiCompletion(response.getMessage()).trim();
 		logger.debug("Raw GLM output:\n\"\"\"\n" + output + "\n\"\"\"");
 		
 		// System prompt gave explicit rule to receive questions, starting with "User:"
@@ -146,8 +130,20 @@ public class NovelaiService {
 		//   For now, only the use of Kayra-v1 is supported, which uses the Tokenizer-model Nerdstash-V2.
 		try (SpTokenizer sp = new SpTokenizer(getFile("nerdstashv2.model").toPath()) ) {
 			String encodedInput = encodeTokenize(promptDto.getPrompt(), sp);
-			NovelaiResponse response = prompt(encodedInput, MODEL_KAYRA);
-			String decoded = decodeDetokenize(response.getMessage(), sp);
+			
+			String requestJson = loadConfigKayra(encodedInput);
+			NovelaiResponse response = prompt(requestJson, URL_STANDARD_TEXTGEN);
+			
+			if(response == null) {
+				return null;
+			}
+			
+			if(HttpStatus.valueOf(response.getStatusCode()).isError()) {
+				return response;
+			}
+			
+			String output = parseResponseStandard(response.getMessage());
+			String decoded = decodeDetokenize(output, sp);
 			
 			return new NovelaiResponse(response.getStatusCode(), decoded);	
 		} catch (IOException e) {
@@ -281,39 +277,23 @@ public class NovelaiService {
 		return Base64.getEncoder().encodeToString(binary);
 	}
 	
-	private String loadConfigJson(String userInput, String model) throws IOException {
-		String configFilename;
-		String inputParamName;
-		
-		switch(model) {
-			case MODEL_GLM:
-				configFilename = "novelaiGlmConfig.json";
-				inputParamName = "prompt";
-				break;
-			case MODEL_KAYRA:
-				configFilename = "novelaiKayraConfig.json";
-				inputParamName = "input";
-				break;
-			default:
-				return null;
-		}
-		
+	private String loadConfigJson(String userInput, String configFilename, String configInputParamName) throws IOException {		
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectNode node = (ObjectNode) mapper.readTree(getFile(configFilename));
 
-		String inputFromJson = node.get(inputParamName).asText();
+		String inputFromJson = node.get(configInputParamName).asText();
 		inputFromJson += userInput;
-		node.put(inputParamName, inputFromJson);
+		node.put(configInputParamName, inputFromJson);
 		
 		return mapper.writeValueAsString(node);
 	}
 	
 	private String loadConfigKayra(String userInput) throws IOException {
-		return loadConfigJson(userInput, MODEL_KAYRA);
+		return loadConfigJson(userInput, "novelaiKayraConfig.json", "input");
 	}
 	
 	private String loadConfigGlm(String userInput) throws IOException {
-		return loadConfigJson(userInput, MODEL_GLM);
+		return loadConfigJson(userInput, "novelaiGlmConfig.json", "prompt");
 	}
 
 	private File getFile(String filename) throws IOException {
