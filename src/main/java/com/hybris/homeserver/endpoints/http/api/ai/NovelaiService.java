@@ -112,6 +112,15 @@ public class NovelaiService {
 		}
 		
 		NovelaiResponse response = prompt(userInput, MODEL_GLM);
+		
+		if(response == null) {
+			return null;
+		}
+		
+		if(HttpStatus.valueOf(response.getStatusCode()).is4xxClientError()) {
+			return response;
+		}
+		
 		String output = response.getMessage().trim();
 		logger.debug("Raw GLM output:\n\"\"\"\n" + output + "\n\"\"\"");
 		
@@ -147,6 +156,15 @@ public class NovelaiService {
 		try (SpTokenizer sp = new SpTokenizer(getFile("nerdstashv2.model").toPath()) ) {
 			String encodedInput = encodeTokenize(promptDto.getPrompt(), sp);
 			NovelaiResponse response = prompt(encodedInput, MODEL_KAYRA);
+			
+			if(response == null) {
+				return null;
+			}
+			
+			if(HttpStatus.valueOf(response.getStatusCode()).is4xxClientError()) {
+				return response;
+			}
+			
 			String decoded = decodeDetokenize(response.getMessage(), sp);
 			
 			return new NovelaiResponse(response.getStatusCode(), decoded);	
