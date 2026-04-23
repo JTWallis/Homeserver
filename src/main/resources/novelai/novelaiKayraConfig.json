@@ -1,0 +1,8 @@
+{
+    "model": "kayra-v1",
+    "input": "",
+    "parameters": {
+        "temperature": 1.0,
+        "max_length": 128
+    }
+}
