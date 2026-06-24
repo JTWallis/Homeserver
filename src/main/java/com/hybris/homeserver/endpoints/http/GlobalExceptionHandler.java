@@ -1,6 +1,7 @@
 package com.hybris.homeserver.endpoints.http;
 
 import java.io.IOException;
+import java.nio.file.InvalidPathException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,11 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(NoResourceFoundException.class)
 	public String handleResourceNotFound(NoResourceFoundException ex, HttpServletRequest request) {
 		return "no_page";
+	}
+	
+	@ExceptionHandler(InvalidPathException.class)
+	public ResponseEntity<ErrorResponseDto> handleInvalidPath(InvalidPathException ex, HttpServletRequest request) {
+		return buildResponse(HttpStatus.NOT_FOUND, "Path not found", request);
 	}
 	
 	@ExceptionHandler(IOException.class)
