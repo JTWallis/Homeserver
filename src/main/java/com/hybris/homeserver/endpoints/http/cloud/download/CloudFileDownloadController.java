@@ -33,20 +33,17 @@ public class CloudFileDownloadController {
 	}
 
 	@GetMapping("/cloud/download")
-	public Object download(@RequestParam("partial_dir") String filepath, @RequestParam("filename") String filename, RedirectAttributes redirectAttributes, HttpServletRequest request) {
+	public Object download(@RequestParam("partial_dir") String filepath, @RequestParam("filename") String filename, RedirectAttributes redirectAttributes, HttpServletRequest request) throws InvalidPathException, IOException  {
 		if(filepath == null || filepath.isBlank() || filename == null || filepath.isBlank()) {
 			return ResponseEntity.notFound().build();
 		}
 		
 		Resource resource;
-		long contentLength;
-		
 		
 		try {
 			resource = storageService.loadAsResource(filepath, filename);
-			contentLength = resource.contentLength();
 		} catch(FileSizeLimitExceededException e) {
-			
+			// TODO: Add specific Exception Handling into separate ControllerAdvice with basePackage/assignableTypes
 			// TODO: Add general error message display
 			redirectAttributes.addFlashAttribute(
 					CloudAttribConstants.REDIRECT_ERROR_MSG,
@@ -54,15 +51,9 @@ public class CloudFileDownloadController {
 			);
 			
 			return "redirect:/cloud";
-		} catch(InvalidPathException | IllegalPathException e) {
-			return ResponseEntity.notFound().build();
-		} catch(IOException e) {
-			return ResponseEntity.badRequest().body(new ErrorResponseDto(
-					HttpStatus.BAD_REQUEST,
-					request.getRequestURI(), 
-					"Error when reading file!"
-			));
 		}
+		
+		long contentLength = resource.contentLength();
 		
 		HttpHeaders headers = new HttpHeaders();
 		headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + resource.getFilename());
