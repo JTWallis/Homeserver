@@ -29,6 +29,7 @@ public class CloudFileUploadController {
 	public String uploadFile(@RequestParam("file") MultipartFile file,  RedirectAttributes redirectAttributes, HttpSession httpSession) {
 		String path = (String) httpSession.getAttribute(CloudAttribConstants.SESSION_PARTIAL_DIR);
 		
+		// TODO: Add specific Exception Handling into separate ControllerAdvice with basePackage/assignableTypes
 		try {
 			storageService.store(path, file);
 		} catch(IllegalPathException | InvalidPathException e) {
