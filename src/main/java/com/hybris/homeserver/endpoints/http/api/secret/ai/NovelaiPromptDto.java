@@ -1,4 +1,4 @@
-package com.hybris.homeserver.endpoints.http.api.ai;
+package com.hybris.homeserver.endpoints.http.api.secret.ai;
 
 public class NovelaiPromptDto {
 

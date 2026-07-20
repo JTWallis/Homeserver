@@ -1,4 +1,4 @@
-package com.hybris.homeserver.endpoints.http.api.barcode;
+package com.hybris.homeserver.endpoints.http.api.secret.barcode;
 
 public class BarcodeMetadata {
 
