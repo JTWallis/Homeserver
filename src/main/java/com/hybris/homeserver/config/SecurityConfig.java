@@ -52,15 +52,15 @@ public class SecurityConfig {
 	
 	@Bean
 	@Order(2)
-	public SecurityFilterChain cloudApiFilterChain(
+	public SecurityFilterChain secretApiFilterChain(
 			HttpSecurity http,
 			JwtAuthenticationFilter jwtAuthFilter
 	) throws Exception {
 		http
 		.csrf(csrf -> csrf.disable())
-		.securityMatcher("/api/cloud/**")
+		.securityMatcher("/api/secret/**")
 		.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/api/cloud/auth/**").permitAll()
+				.requestMatchers("/api/secret/auth/**").permitAll()
 				.anyRequest().authenticated())
 		
 		.userDetailsService(userDetailsService)
