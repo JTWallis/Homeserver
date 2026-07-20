@@ -1,13 +1,12 @@
-package com.hybris.homeserver.endpoints.http.cloud;
+package com.hybris.homeserver.endpoints.http.api.secret.auth;
 
-public class CloudLoginDto {
+
+public class ApiAuthRequestDto {
 
 	private String username;
 	private String password;
 	
-	public CloudLoginDto() {}
-	
-	public CloudLoginDto(String username, String password) {
+	public ApiAuthRequestDto(String endpointRequest, String username, String password) {
 		this.username = username;
 		this.password = password;
 	}

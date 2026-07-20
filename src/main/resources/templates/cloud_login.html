@@ -6,8 +6,9 @@
 	<body>
 		<h1>Cloud Login</h1>
 		
-		<div th:if="${param.error}">
-			Invalid username and password.
+		<div th:if="${param.error}" th:switch="${param.error[0]}">
+			<span th:case="'denied'">Insufficient user permission to access cloud.</span>
+			<span th:case="*">Invalid username and password.</span>
 		</div>
 		
 		<div th:if="${param.logout}">

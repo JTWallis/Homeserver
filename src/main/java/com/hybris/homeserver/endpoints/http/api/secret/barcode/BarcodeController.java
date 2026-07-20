@@ -1,4 +1,4 @@
-package com.hybris.homeserver.endpoints.http.api.barcode;
+package com.hybris.homeserver.endpoints.http.api.secret.barcode;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -9,24 +9,23 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.hybris.homeserver.endpoints.http.api.ErrorResponseDto;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-@Controller
+@RestController
 public class BarcodeController {
-
 	private final BarcodeService barcodeService;
 	
 	public BarcodeController(BarcodeService barcodeService) {
 		this.barcodeService = barcodeService;
 	}
 	
-	@GetMapping("/api/barcode/metadata/{code}")
+	@GetMapping("/api/secret/barcode/metadata/{code}")
 	public ResponseEntity<?> lookupMetadata(@PathVariable("code") long code, HttpServletRequest request) throws IOException, InterruptedException, TimeoutException, ExecutionException {
 		ResponseEntity<?> validated = validateCode(code, request);
 		if(validated.getStatusCode() != HttpStatus.OK) {
@@ -40,7 +39,7 @@ public class BarcodeController {
 		);
 	}
 	
-	@GetMapping("/api/barcode/thumbnail/{code}")
+	@GetMapping("/api/secret/barcode/thumbnail/{code}")
 	public ResponseEntity<?> lookupThumbnail(@PathVariable("code") long code, HttpServletRequest request) throws IOException, InterruptedException, TimeoutException, ExecutionException, NullPointerException {
 		ResponseEntity<?> validated = validateCode(code, request);
 		if(validated.getStatusCode() != HttpStatus.OK) {

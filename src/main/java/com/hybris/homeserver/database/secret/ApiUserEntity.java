@@ -1,4 +1,4 @@
-package com.hybris.homeserver.database.cloud;
+package com.hybris.homeserver.database.secret;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -8,13 +8,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "cloud_login")
-public class CloudLoginEntity {
-	
+@Table(name = "api_user")
+public class ApiUserEntity {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
-	
+
 	@Column(unique = true, nullable = false)
 	private String username;
 	
@@ -23,7 +23,10 @@ public class CloudLoginEntity {
 	
 	@Column(nullable = false)
 	private String role = "USER";
-
+	
+	@Column(nullable = false)
+	private String endpoints;
+	
 	public long getId() {
 		return id;
 	}
@@ -47,12 +50,20 @@ public class CloudLoginEntity {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
+
 	public String getRole() {
 		return role;
 	}
-	
+
 	public void setRole(String role) {
 		this.role = role;
+	}
+
+	public String getEndpoints() {
+		return endpoints;
+	}
+
+	public void setEndpoints(String endpoints) {
+		this.endpoints = endpoints;
 	}
 }
