@@ -6,6 +6,8 @@ import java.nio.file.InvalidPathException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.TypeMismatchException;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -18,6 +20,7 @@ import com.hybris.homeserver.endpoints.http.api.ErrorResponseDto;
 import jakarta.servlet.http.HttpServletRequest;
 
 @ControllerAdvice
+@Order(Ordered.LOWEST_PRECEDENCE)
 public class GlobalExceptionHandler {
 	
 	private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
