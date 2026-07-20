@@ -15,15 +15,15 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.hybris.homeserver.JwtAuthenticationFilter;
-import com.hybris.homeserver.endpoints.http.cloud.CloudUserDetailsService;
+import com.hybris.homeserver.endpoints.http.api.secret.auth.ApiUserDetailsService;
 
 @Configuration
 public class SecurityConfig {
 	
-	private final CloudUserDetailsService cloudUserDetailService;
+	private final ApiUserDetailsService userDetailsService;
 	
-	public SecurityConfig(CloudUserDetailsService cloudUserDetailService) {
-		this.cloudUserDetailService = cloudUserDetailService;
+	public SecurityConfig(ApiUserDetailsService userDetailService) {
+		this.userDetailsService = userDetailService;
 	}
 	
 	@Bean
@@ -37,7 +37,7 @@ public class SecurityConfig {
 				.requestMatchers("/cloud/login", "/cloud/register").permitAll()
 				.anyRequest().authenticated())
 		
-		.userDetailsService(cloudUserDetailService)
+		.userDetailsService(userDetailsService)
 		.formLogin(form -> form
 				.loginPage("/cloud/login")
 				.loginProcessingUrl("/cloud/login")
@@ -63,7 +63,7 @@ public class SecurityConfig {
 				.requestMatchers("/api/cloud/auth/**").permitAll()
 				.anyRequest().authenticated())
 		
-		.userDetailsService(cloudUserDetailService)
+		.userDetailsService(userDetailsService)
 		
 		.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -100,7 +100,7 @@ public class SecurityConfig {
 	
 	@Bean
 	public AuthenticationProvider cloudAuthenticationProvider() {
-		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(cloudUserDetailService);
+		DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService);
 		authProvider.setPasswordEncoder(passwordEncoder());
 		return authProvider;
 	}
