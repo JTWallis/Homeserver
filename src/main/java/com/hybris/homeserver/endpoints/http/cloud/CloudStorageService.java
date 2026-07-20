@@ -3,6 +3,7 @@ package com.hybris.homeserver.endpoints.http.cloud;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -88,11 +89,13 @@ public class CloudStorageService {
 		}
 	}
 	
-	public void createUserRoot(String username) {
+	public void createUserRoot(Path absolutePath) {
 		try {
-			Files.createDirectory(Path.of(DIR_USER_ROOTS + username));
+			Files.createDirectory(absolutePath);
+		} catch(FileAlreadyExistsException e) {
+			return;
 		} catch (IOException e) {
-			logger.warn("Could not create Cloud user root dir for user '" + username + "' with exception: " + e.getMessage());
+			logger.warn("Could not create Cloud user root dir for path '" + absolutePath.toString() + "' with exception: " + e.getMessage());
 		}
 	}
 	
