@@ -6,15 +6,20 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authorization.AuthorizationDecision;
+import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.RequestAuthorizationContext;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.hybris.homeserver.JwtAuthenticationFilter;
+import com.hybris.homeserver.endpoints.http.api.secret.auth.ApiUser;
 import com.hybris.homeserver.endpoints.http.api.secret.auth.ApiUserDetailsService;
 
 @Configuration
@@ -35,7 +40,7 @@ public class SecurityConfig {
 		.securityMatcher("/cloud/**")
 		.authorizeHttpRequests(auth -> auth
 				.requestMatchers("/cloud/login", "/cloud/register").permitAll()
-				.anyRequest().authenticated())
+				.anyRequest().access(whitelistAuthorizationManager()))
 		
 		.userDetailsService(userDetailsService)
 		.formLogin(form -> form
@@ -61,7 +66,7 @@ public class SecurityConfig {
 		.securityMatcher("/api/secret/**")
 		.authorizeHttpRequests(auth -> auth
 				.requestMatchers("/api/secret/auth/**").permitAll()
-				.anyRequest().authenticated())
+				.anyRequest().access(whitelistAuthorizationManager()))
 		
 		.userDetailsService(userDetailsService)
 		
@@ -110,5 +115,21 @@ public class SecurityConfig {
 		return config.getAuthenticationManager();
 	}
 	
+	@Bean
+	public AuthorizationManager<RequestAuthorizationContext> whitelistAuthorizationManager() {
+		return (authSupplier, context) -> {
+			Authentication auth = authSupplier.get();
+			if(auth == null || !auth.isAuthenticated() || !(auth.getPrincipal() instanceof ApiUser principal)) {
+				return new AuthorizationDecision(false);
+			}
 
+			boolean granted = principal.isAdmin();
+			if(!granted) {
+				String path = context.getRequest().getRequestURI();
+				granted = principal.isWhitelisted(path);
+			}
+
+			return new AuthorizationDecision(granted);
+		};
+	}
 }
