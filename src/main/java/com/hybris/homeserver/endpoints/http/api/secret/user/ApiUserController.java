@@ -29,7 +29,7 @@ public class ApiUserController {
 
 		userService.registerUser(dto);
 		
-		return ResponseEntity.noContent().build();
+		return ResponseEntity.ok(new ApiUserResponseDto(dto));
 	}
 	
 }
