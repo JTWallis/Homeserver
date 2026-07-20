@@ -24,6 +24,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.hybris.homeserver.endpoints.http.api.secret.auth.ApiUser;
 import com.hybris.homeserver.endpoints.http.cloud.download.FilenameAwareByteArrayResource;
 
 @Service
@@ -209,12 +210,16 @@ public class CloudStorageService {
 	}
 	
 	private boolean isUserAdmin() {
-		return SecurityContextHolder
-				.getContext()
-				.getAuthentication()
-				.getAuthorities()
-				.stream()
-				.anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+		var authentication = SecurityContextHolder.getContext().getAuthentication();
+		if(authentication.getPrincipal() instanceof ApiUser principal) {
+			return principal.isAdmin();
+		} else {
+			// Fallback if for whatever reason principal cast should fail.
+			return authentication
+					.getAuthorities()
+					.stream()
+					.anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+		}
 	}
 	
 	public boolean isPathUserRoot(Path p) {
