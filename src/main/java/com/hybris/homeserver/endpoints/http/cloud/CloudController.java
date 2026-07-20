@@ -32,6 +32,10 @@ public class CloudController {
 		Path pathAbsolute = storageService.resolveLegalAbsolutePath(currentPartialDir, navFilename);
 		String pathPartial = storageService.getPartialPath(pathAbsolute);
 		
+		if(currentPartialDir == null) {
+			storageService.createUserRoot(pathAbsolute);
+		}
+		
 		// Collect all filenames and iconnames of the path.
 		List<CloudFile> files = storageService.loadAsCloudFiles(pathAbsolute);
 		
