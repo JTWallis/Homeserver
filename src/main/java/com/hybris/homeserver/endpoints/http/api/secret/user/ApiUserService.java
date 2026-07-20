@@ -1,5 +1,8 @@
 package com.hybris.homeserver.endpoints.http.api.secret.user;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -43,5 +46,22 @@ public class ApiUserService {
 				}
 			}
 		}
+	}
+
+	public ApiUserResponseDto getSingle(String username) {
+		ApiUserEntity entity = userRepository.findByUsername(username);
+		if(entity == null) return null;
+		return new ApiUserResponseDto(entity.getUsername(), entity.getRole(), entity.getEndpoints());
+	}
+	
+	public List<ApiUserResponseDto> getAll() {
+		List<ApiUserEntity> entities = userRepository.findAll();
+		List<ApiUserResponseDto> result = new ArrayList<ApiUserResponseDto>();
+		
+		for(ApiUserEntity e : entities) {
+			result.add(new ApiUserResponseDto(e.getUsername(), e.getRole(), e.getEndpoints()));
+		}
+		
+		return result;
 	}
 }
