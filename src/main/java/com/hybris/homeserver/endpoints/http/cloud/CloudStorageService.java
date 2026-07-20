@@ -3,6 +3,7 @@ package com.hybris.homeserver.endpoints.http.cloud;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -23,6 +24,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.hybris.homeserver.endpoints.http.api.secret.auth.ApiUser;
 import com.hybris.homeserver.endpoints.http.cloud.download.FilenameAwareByteArrayResource;
 
 @Service
@@ -88,11 +90,13 @@ public class CloudStorageService {
 		}
 	}
 	
-	public void createUserRoot(String username) {
+	public void createUserRoot(Path absolutePath) {
 		try {
-			Files.createDirectory(Path.of(DIR_USER_ROOTS + username));
+			Files.createDirectory(absolutePath);
+		} catch(FileAlreadyExistsException e) {
+			return;
 		} catch (IOException e) {
-			logger.warn("Could not create Cloud user root dir for user '" + username + "' with exception: " + e.getMessage());
+			logger.warn("Could not create Cloud user root dir for path '" + absolutePath.toString() + "' with exception: " + e.getMessage());
 		}
 	}
 	
@@ -206,12 +210,16 @@ public class CloudStorageService {
 	}
 	
 	private boolean isUserAdmin() {
-		return SecurityContextHolder
-				.getContext()
-				.getAuthentication()
-				.getAuthorities()
-				.stream()
-				.anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+		var authentication = SecurityContextHolder.getContext().getAuthentication();
+		if(authentication.getPrincipal() instanceof ApiUser principal) {
+			return principal.isAdmin();
+		} else {
+			// Fallback if for whatever reason principal cast should fail.
+			return authentication
+					.getAuthorities()
+					.stream()
+					.anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+		}
 	}
 	
 	public boolean isPathUserRoot(Path p) {

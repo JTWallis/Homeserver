@@ -6,7 +6,7 @@ public class ApiAuthRequestDto {
 	private String username;
 	private String password;
 	
-	public ApiAuthRequestDto(String endpointRequest, String username, String password) {
+	public ApiAuthRequestDto(String username, String password) {
 		this.username = username;
 		this.password = password;
 	}
